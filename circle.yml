@@ -1,0 +1,20 @@
+dependencies:
+  override:
+    - wget https://github.com/agonzalezro/polo/releases/download/v1.0-RC1/polo_linux_amd64
+    - chmod a+x polo_linux_amd64
+    - git config --global user.email "ipedrazas@gmail.com"
+    - git config --global user.name "Ivan Pedrazas"
+
+test:
+  override:
+    - echo "Please CircleCI, stop sending me emails."
+
+deployment:
+  master:
+    branch: master
+    commands:
+      - ./polo_linux_amd64 content .
+      - rm -rf Makefile config.json content templates polo_linux_amd64
+      - git add -A .
+      - git commit -m 'Site generation with polo from CircleCI'
+      - git push origin HEAD:gh-pages -f

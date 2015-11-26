@@ -1,0 +1,14 @@
+{
+  "author": "Ivan Pedrazas",
+  "title": "Kubernetes",
+
+  "url": "http://k8s.uk",
+  "favicon": "/static/favicon.ico",
+
+  "showArchive": true,
+  "showCategories": true,
+  "showTags": true,
+
+  "paginationSize": 2
+
+}
