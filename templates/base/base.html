@@ -73,8 +73,18 @@
     <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
       {{template "content" .}}
     </div>
-    {{template "footer" .}}
+    <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+      <div class="text-center">
+
+        {{template "footer" .}}
+      </div>
+    </div>
+
     {{template "analytics" .}}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="//getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
   </body>
 </html>
 {{end}}
