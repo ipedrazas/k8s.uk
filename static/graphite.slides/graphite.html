@@ -1,0 +1,425 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=800" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Graphite, Carbon and Diamond | by Bram Noordzij @random_bits</title>
+    
+    <meta name="author" content="Bram Noordzij" />
+
+    <link href="fonts.css" rel="stylesheet" />
+
+    <link href="css/graphite.css" rel="stylesheet" />
+    
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+    <link href="prettify.css" type="text/css" rel="stylesheet" />
+    <link href="css/sons-of-obsidian.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="prettify.js"></script>
+</head>
+
+<body class="impress-not-supported" onload="prettyPrint()">
+
+<div class="fallback-message">
+    <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+    <p>For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.</p>
+</div>
+
+<div id="impress" `data-transition-duration="5000">
+
+    <!--
+        
+        Here is where interesting thing start to happen.
+        
+        Each step of the presentation should be an element inside the `#impress` with a class name
+        of `step`. These step elements are positioned, rotated and scaled by impress.js, and
+        the 'camera' shows them on each step of the presentation.
+        
+        Positioning information is passed through data attributes.
+        
+        In the example below we only specify x and y position of the step element with `data-x="-1000"`
+        and `data-y="-1500` attributes. This means that **the center** of the element (yes, the center)
+        will be positioned in point x = -1000px and y = -1500px of the presentation 'canvas'.
+        
+        It will not be rotated or scaled.
+        
+    -->
+    <div id="title" class="step" data-x="0" data-y="0" data-scale="1.5">
+        <span class="author">Bram Noordzij on</span>
+        <h1>Graphite</h1>
+        <span class="footnote"> A flexible and scalable graphing tool, written in Python</span>
+    </div>
+
+    <div id="me" class="step lists" data-x="1400" data-y="00" data-rotate-x="-180">
+      <h1>Me:</h1>
+      <q><ul><li><b class="positioning">Kalooga</b> Engineering, mostly</li>
+             <li><b class="rotating">Paylogic</b> Ops, mostly</li>
+             <li><b class="scaling">Euronet</b> Support, mostly</li>
+             <li><b class="scaling">bram@noordzij.net</b></li>
+           </ul>
+        </q>
+    </div>
+
+    <div id="overview" class="step" data-x="1200" data-y="1200" data-z="5000">
+    </div>
+
+    <div class="step lists" data-x="1400" data-y="2800" data-rotate-x="-180">
+      <q><ul><li><b class="positioning">What is graphing?</b></li></ul>
+        </q>
+        <q><a href="http://localhost:8080/dashboard/dash1">Graphite is graphing</a></q>
+    </div>
+
+    <div class="step lists" data-x="0" data-y="4200" data-z="-100" data-rotate-x="-120" data-rotate-y="30">
+      <q><ul><li><b class="positioning">Why Graphite?</b></li>
+        <q><ul><li>Dev friendly</li>
+               <li>Ops friendly</li>
+               <li>Growth friendly</li>
+           </ul>
+        </q>
+    </div>
+
+    <div class="step lists" data-x="0" data-y="5600" data-z="-100" data-rotate-x="-120" data-rotate-y="0">
+      <q><ul><li><b class="positioning">Users</b></li>
+               <li>Instagram - Etsy</li>
+               <li>Github - Kalooga</li>
+               <li>You?</li>
+           </ul>
+        </q>
+    </div>
+
+    <div class="step lists" data-x="0" data-y="7000" data-z="-100" data-rotate-x="-120" data-rotate-y="0">
+      <q><ul><li><b class="positioning">Created by</b></li>
+               <li>Orbitz.com</li>
+               <li>- CheapTickets.com</li>
+               <li>- Ebookers.com</li>
+           </ul>
+        </q>
+    </div>
+
+    <div class="step lists" data-x="0" data-y="8400" data-z="-100" data-rotate-x="-150" data-rotate-y="0">
+        <q><ul><li><b class="positioning">Graphite</b> Graphing ecosystem</li>
+               <li><b class="rotating">Carbon</b> Metrics handler</li>
+               <li><b class="rotating">Whisper</b> Metrics RRD</li>
+               <li><b class="scaling">Diamond</b> A metrics collector</li>
+               <li><b class="scaling">Statsd</b> Secret sauce</li>
+           </ul>
+        </q>
+    </div>
+
+    <div id="arch" class="step slide" data-x="0" data-y="9800" data-z="-100" data-rotate-x="-120" data-rotate-y="30">
+    </div>
+
+    <div class="step lists" data-x="-1400" data-y="0" data-z="-100" data-rotate-x="-120" data-rotate-y="30">
+        <q><ul><li><b class="positioning">Collectors:</b></li>
+               <li>Diamond - CollectD</li>
+               <li>Munin - Ganglia</li>
+               <li><b class="scaling-big">Your Very App!</b></li>
+           </ul>
+        </q>
+    </div>
+
+    <div id="scaling" class="step lists" data-x="-1400" data-y="1930" data-z="0" data-rotate-x="-120" data-rotate-y="30">
+        <q><ul><li><b class="positioning">Scalability story</b></li>
+               <li>1 big server</li>
+               <li>1.000 worker nodes</li>
+               <li>Diamond collects every 5 seconds</li>
+               <li><b class="positioning">300.000 distinct metrics</b></li>
+               <li><b class="scaling-big">3.000.000 points per minute</b></li>
+               <li>10 carbon caches</li>
+               <li><b class="rotating">Some Tuning</b></li>
+           </ul>
+        </q>
+    </div>
+
+   <div class="step slide" data-x="2800" data-y="0" data-z="1000">
+      <pre class="prettyprint lang-python">
+  sock = socket()
+  delay = 60
+  try:
+      sock.connect( (CARBON_SERVER,CARBON_PORT) )
+  except:
+      print "Can't connect to ..."
+      sys.exit(1)
+
+  while True:
+      now = int(time.time())
+      load = open('/proc/loadavg').read().strip().split()[:3]
+      lines = []
+      lines.append("pygrunn.load %s %d" % (load,now))
+      sock.sendall(message)
+      time.sleep(delay)
+    </pre>
+</div>
+
+    <div class="step lists" data-x="-1400" data-y="5200" data-z="0" data-rotate-x="-120" data-rotate-y="60">
+        <q><ul><li><b class="positioning">Statsd</b></li>
+               <li>Layer before Graphite</li>
+               <li><b class="rotating">UDP</b></li>
+               <li>Calculates derivatives:</li>
+               <li><b class="scaling">Mean, Max, 99th percentile</b></li>
+           </ul>
+        </q>
+    </div>
+
+ 
+    <div class="step lists" data-x="-1400" data-y="3200" data-z="0" data-rotate-x="-120" data-rotate-y="60">
+        <q><ul><li><b class="positioning">Statsd: 15 Implementions</b></li>
+               <li>StatsD - Node.js</li>
+               <li>Statsd-c - C</li>
+               <li>Bucky - Python</li>
+               <li> ... </li>
+           </ul>
+        </q>
+    </div>
+
+ 
+    <div class="step slide" data-x="2800" data-y="1500" data-z="0">
+      <pre class="prettyprint lang-python">
+  from statsd import StatsClient
+  import random
+  import time
+
+  statsd = StatsClient()
+
+  @statsd.timer('pygrunn.myfunc')
+  def myfunc(a, b):
+      """Calculate the most complicated thing a and b can do."""
+      time.sleep(random.random())
+
+  # Timing information will be sent every time the function is called.
+  myfunc(1, 2)
+  myfunc(3, 7)
+    </pre>
+</div>
+
+    <div id="shell" class="step slide" data-x="2800" data-y="3000" data-z="-1000">
+      <pre class="prettyprint lang-shell">
+  host="${STATSD_HOST:-127.0.0.1}"
+  port="${STATSD_PORT:-8125}"
+
+  if [ $# -ne 1 ]
+  then
+      echo "Syntax: $0 '<gauge_data_for_statsd>'"
+      exit 1
+  fi
+
+  # Setup UDP socket with statsd server
+  exec 3<> /dev/udp/$host/$port
+
+  # Send data
+  printf "$1" >&3
+
+  # Close UDP socket
+  exec 3<&-
+  exec 3>&-
+
+    </pre>
+</div>
+
+    <div class="step" data-x="1200" data-y="1200" data-scale="10">
+    </div>
+
+    <div id="api1" class="step lists" data-x="4200" data-y="0" data-z="-100" data-rotate-x="-120" data-rotate-y="30">
+      <q><ul><li><b class="positioning">Graphite URL API</b></li></ul></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree">render?</a></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree">&target=servers.diamond.memory.MemFree</a></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree">&from=-1h</a></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree&title=MemFree">&title=MemFree</a></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree&title=MemFree&format=png">&format=png</a></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree&title=MemFree&format=svg">&format=svg</a></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree&title=MemFree&format=json">&format=json</a></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree&title=MemFree&format=csv">&format=csv</a></q>
+        <q><a href="http://localhost:8080/render?from=-1h&target=servers.diamond.memory.MemFree&title=MemFree&height=768&width=1024">&height=768</a></q>
+    </div>
+
+    <div id="api2" class="step lists" data-x="4200" data-y="2800" data-z="-100" data-rotate-x="-120" data-rotate-y="60">
+      <q><ul><li><b class="positioning">Graphite URL API</b></li></ul></q>
+        <q>Single server load on large graph</q>
+        <q><a href="">target=server.web1.load&height=800&width=600</a></q>
+        <q>Average load across machines</q>
+        <q><a href="">target=averageSeries(server.web*.load)</a></q>
+    </div>    
+
+    <div id="api3" class="step lists" data-x="4200" data-y="4200" data-z="-100" data-rotate-x="-120" data-rotate-y="90">
+      <q><ul><li><b class="positioning">Graphite URL API</b></li></ul></q>
+        <q>Number of registered users over past day as raw json data</a></q>
+        <q><a href="">target=app.numUsers&format=json</a></q>
+        <q>Rate of new signups per minute</a></q>
+        <q><a href="">target=summarize(deriviative(numUsers),"1min")</a></q>
+        <q>Summarize deploys per week</a></q>
+        <q><a href="">summarize(sumSeries(group(apps.*.deploy)), "1w")</a></q>
+    </div>    
+
+    <div id="deploy" class="step lists" data-x="4200" data-y="5600" data-z="-100" data-rotate-x="-120" data-rotate-y="60">
+      <q><ul><li><b class="positioning">Graphite drawAsInfinite()</b></li></ul></q>
+        <q><a href="http://localhost:8080/render?target=color(stats.nl.pygrunn.error,%22red%22)&target=drawAsInfinite(color(stats.nl.pygrunn.deploy,%22white%22))&from=-30min&format=svg">Deploys and error rates</a></q>
+        <q>, and perhaps you like</a></q>
+        <q><a href="http://localhost:8080/render?graphType=pie&target=color(stats.nl.pygrunn.error,%22red%22)&target=drawAsInfinite(color(stats.nl.pygrunn.deploy,%22white%22))&from=-30min&format=svg">Pie diagrams</a></q>
+    </div>    
+
+    <div id="spike1" class="step slide" data-x="5600" data-y="0">
+    </div>
+
+    <div class="step lists" data-x="5600" data-y="1400">
+        <q><ul><li><b class="positioning">Which ones are the most deviant?</b></li>
+               <li><a href="">target=mostDeviant(5, runtime.*.load.1m)</a></li>
+           </ul>
+        </q>
+    </div>
+
+    <div id="spike2" class="step slide" data-x="5600" data-y="2800">
+    </div>
+
+    <div class="step lists" data-x="5600" data-y="4200">
+        <q><ul><li><b class="positioning">What's also nice?</b></li>
+               <li>Sentry: Exception collector</li>
+               <li>Shinken: Nagios/Alerting</li>
+               <li>New Relic: APM SaaS</li>
+           </ul>
+        </q>
+    </div>
+
+    <div class="step lists" data-x="5600" data-y="5000", data-z="-100" data-rotate-x="-150" data-rotate-y="60">
+        <q><ul><li><b class="scaling-big">So, that is graphite</b></li>
+           </ul>
+        </q>
+    </div>
+
+    <div class="step lists" data-x="7200" data-y="5600", data-z="-100" data-rotate-x="-120" data-rotate-y="120">
+        <q><ul><li><b class="positioning">What about python API Frameworks?</b></li>
+           </ul>
+        </q>
+    </div>
+
+    <div class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<!--
+    
+    Hint is not related to impress.js in any way.
+    
+    But it can show you how to use impress.js features in creative way.
+    
+    When the presentation step is shown (selected) its element gets the class of "active" and the body element
+    gets the class based on active step id `impress-on-ID` (where ID is the step's id)... It may not be
+    so clear because of all these "ids" in previous sentence, so for example when the first step (the one with
+    the id of `bored`) is active, body element gets a class of `impress-on-bored`.
+    
+    This class is used by this hint below. Check CSS file to see how it's shown with delayed CSS animation when
+    the first step of presentation is visible for a couple of seconds.
+    
+    ...
+    
+    And when it comes to this piece of JavaScript below ... kids, don't do this at home ;)
+    It's just a quick and dirty workaround to get different hint text for touch devices.
+    In a real world it should be at least placed in separate JS file ... and the touch content should be
+    probably just hidden somewhere in HTML - not hard-coded in the script.
+    
+    Just sayin' ;)
+    
+-->
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if (false && "ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+
+<!--
+    
+    Last, but not least.
+    
+    To make all described above really work, you need to include impress.js in the page.
+    I strongly encourage to minify it first.
+    
+    In here I just include full source of the script to make it more readable.
+    
+    You also need to call a `impress().init()` function to initialize impress.js presentation.
+    And you should do it in the end of your document. Not only because it's a good practice, but also
+    because it should be done when the whole document is ready.
+    Of course you can wrap it in any kind of "DOM ready" event, but I was too lazy to do so ;)
+    
+-->
+<script src="js/impress.js"></script>
+<script>impress().init();</script>
+
+<!--
+    
+    The `impress()` function also gives you access to the API that controls the presentation.
+    
+    Just store the result of the call:
+    
+        var api = impress();
+    
+    and you will get three functions you can call:
+    
+        `api.init()` - initializes the presentation,
+        `api.next()` - moves to next step of the presentation,
+        `api.prev()` - moves to previous step of the presentation,
+        `api.goto( idx | id | element, [duration] )` - moves the presentation to the step given by its index number
+                id or the DOM element; second parameter can be used to define duration of the transition in ms,
+                but it's optional - if not provided default transition duration for the presentation will be used.
+    
+    You can also simply call `impress()` again to get the API, so `impress().next()` is also allowed.
+    Don't worry, it wont initialize the presentation again.
+    
+    For some example uses of this API check the last part of the source of impress.js where the API
+    is used in event handlers.
+    
+-->
+
+</body>
+</html>
+
+<!--
+    
+    Now you know more or less everything you need to build your first impress.js presentation, but before
+    you start...
+    
+    Oh, you've already cloned the code from GitHub?
+    
+    You have it open in text editor?
+    
+    Stop right there!
+    
+    That's not how you create awesome presentations. This is only a code. Implementation of the idea that
+    first needs to grow in your mind.
+    
+    So if you want to build great presentation take a pencil and piece of paper. And turn off the computer.
+    
+    Sketch, draw and write. Brainstorm your ideas on a paper. Try to build a mind-map of what you'd like
+    to present. It will get you closer and closer to the layout you'll build later with impress.js.
+    
+    Get back to the code only when you have your presentation ready on a paper. It doesn't make sense to do
+    it earlier, because you'll only waste your time fighting with positioning of useless points.
+    
+    If you think I'm crazy, please put your hands on a book called "Presentation Zen". It's all about 
+    creating awesome and engaging presentations.
+    
+    Think about it. 'Cause impress.js may not help you, if you have nothing interesting to say.
+    
+-->
+
+<!--
+    
+    Are you still reading this?
+    
+    For real?
+    
+    I'm impressed! Feel free to let me know that you got that far (I'm @bartaz on Twitter), 'cause I'd like
+    to congratulate you personally :)
+    
+    But you don't have to do it now. Take my advice and take some time off. Make yourself a cup of coffee, tea,
+    or anything you like to drink. And raise a glass for me ;)
+    
+    Cheers!
+    
+-->
+
