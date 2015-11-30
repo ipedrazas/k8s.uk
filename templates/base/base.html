@@ -26,7 +26,7 @@
 
   <body>
     <div class="navbar navbar-default navbar-static-top navbar-inverse" role="navigation">
-      <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+      <div class="container col-md-10 col-md-offset-1 col-lg-4 col-lg-offset-1">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -39,30 +39,11 @@
         {{if or (and .Site.Categories .Site.Config.ShowCategories) (and .Site.Articles .Site.Config.ShowArchive)}}
         <div class="navbar-collapse collapse">
           {{if or .Site.Pages (and .Site.Articles .Site.Config.ShowArchive)}}
-          <ul class="nav navbar-nav">
-            {{if .Site.Config.ShowArchive}}
-            <li><a href="/archives.html">Archives</a></li>
-            {{end}}
-            {{range $_, $page := .Site.Pages}}
-            <li><a href="{{$page.Slug}}">{{$page.Title}}</a></li>
-            {{end}}
-          </ul>
-          {{ end }}
-          {{if and .Site.Categories .Site.Config.ShowCategories}}
           <ul class="nav navbar-nav navbar-right">
-            {{if and .Site.Categories .Site.Config.ShowCategories}}
-            <li class="dropdown">
-            <a href="#" data-toggle="dropdown">Categories <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              {{range $_, $category := .Site.Categories}}
-              {{$articles := $.ArticlesByCategory $category}}
-              <li>
-              <a href="/category/{{$category}}.html">{{$category}} <span class="badge pull-right">{{len $articles}}</span></a>
-              </li>
-              {{end}}
-            </ul>
-            </li>
+            {{if .Site.Config.ShowArchive}}
+              <li><a href="/about.html">About</a></li>
             {{end}}
+
            </ul>
           {{end}}
         </div>
@@ -70,9 +51,30 @@
       </div>
     </div>
 
-    <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+    <div class="container col-md-3 col-lg-3">
       {{template "content" .}}
     </div>
+     <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-1">
+            {{range $i, $article := .Articles}}
+
+                <article>
+                  <p>
+                    <a href="{{$article.Slug}}">{{$article.Title}}</a>
+                    {{if $article.Tags}}
+                      {{range $_, $tag := $article.Tags}}
+                        <a class="label label-default pull-right" href="/tag/{{$tag}}.html">{{$tag}}</a><span class="pull-right">&nbsp;</span>
+                      {{end}}
+                    {{end}}
+
+                      {{$article.HTML $article.Content}}
+
+                  </p>
+                </article>
+                  <hr>
+
+            {{end}}
+      </div>
+
     <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
       <div class="text-center">
 
