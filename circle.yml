@@ -13,8 +13,8 @@ deployment:
   master:
     branch: master
     commands:
-      - ./polo_linux_amd64 content .
-      - rm -rf Makefile config.json content templates polo_linux_amd64
+      - ./polo_linux_amd64 kubernetes .
+      - rm -rf Makefile config.json kubernetes templates polo_linux_amd64
       - git add -A .
       - git commit -m 'Site generation with polo from CircleCI'
       - git push origin HEAD:gh-pages -f
