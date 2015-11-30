@@ -17,3 +17,14 @@ h5 {
 p {
   font-size: 1.8em;
 }
+
+.tag{
+    font-size: 0.5em;
+}
+
+.navbar-brand{
+    font-size: 2.4em;
+    font-weight: bold;
+    color: #989898;
+    margin-bottom: 5px;
+}
