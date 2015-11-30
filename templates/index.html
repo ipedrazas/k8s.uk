@@ -1,0 +1,56 @@
+{{define "title"}}
+{{.Site.Config.Title}}
+{{end}}
+
+{{define "content"}}
+{{if .Articles}}
+
+{{range $_, $article := .Articles}}
+<article>
+<p>
+  <a href="{{$article.Slug}}">{{$article.Title}}</a>
+  {{if $article.Tags}}
+  {{range $_, $tag := $article.Tags}}
+    <a class="label label-default pull-right" href="/tag/{{$tag}}.html">{{$tag}}</a><span class="pull-right">&nbsp;</span>
+  {{end}}
+  {{end}}
+</p>
+</article>
+<hr>
+{{end}}
+
+{{else}}
+<h1>Nothing to see here!</h1>
+<hr>
+{{end}}
+
+{{if gt .Site.NumberOfPages 1 }}
+<div class="text-center"><ul class="pagination">
+
+    <li class="
+    {{if eq $.PageNumber 1}}
+    disabled
+    {{end}}
+    ">
+    <a href="{{$.PreviousSlug $.PageNumber}}">&laquo;</a>
+    </li>
+
+    {{range $_, $page := .ArrayOfPages}}
+    <li {{if eq $page $.PageNumber}}class="active"{{end}}>
+    <a href="/index{{if ne $page 1}}{{$page}}{{end}}.html">
+      {{$page}}
+    </a>
+    </li>
+    {{end}} {{/* range */}}
+
+    <li class="
+    {{if eq $.PageNumber $.Site.NumberOfPages}}
+    disabled
+    {{end}}
+    ">
+    <a href="{{$.NextSlug $.PageNumber}}">&raquo;</a>
+    </li>
+
+</ul></div>
+{{end}} {{/* if */}}
+{{end}} {{/* content */}}
