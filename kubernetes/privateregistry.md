@@ -1,5 +1,5 @@
 Date: 2015-12-3 09:58
-tags: registry, kubernetes, core
+tags: registry, core
 
 Private Registry
 ======================

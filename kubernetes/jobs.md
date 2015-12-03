@@ -1,5 +1,5 @@
 Date: 2015-11-30 12:08
-tags: job, kubernetes, core
+tags: job, core
 
 Jobs
 ======================

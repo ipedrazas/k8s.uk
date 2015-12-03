@@ -34,3 +34,9 @@ p {
     height: 350px;
 
 }
+
+.articleTitle{
+  font-size: 2em;
+  font-weight: bold;
+  border-bottom: 4px solid rgb(66, 139, 202);
+}
