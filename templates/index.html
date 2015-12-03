@@ -7,7 +7,7 @@
 
 {{range $_, $article := .Articles}}
 <article>
-<p class="articleTitle">
+<p >
   <a href="{{$article.Slug}}" >{{$article.Title}}</a>
   {{if $article.Tags}}
   {{range $_, $tag := $article.Tags}}
