@@ -1,7 +1,7 @@
 Date: 2015-12-04 15:38
 tags: management, labels, core
 
-Deployments powered by Labels
+Deploy by Labels
 ======================
 
 Labels in kubernetes are the only way of grouping, filtering and selecting resources. In my experience, we do not use labels enough. Unlike with AWS, you can define as many labels as you want, so, why are we not truly squeezing all the potential of labels?
@@ -14,9 +14,9 @@ Have you ever done a deployment where everything went well but for a non technic
 
 Labels are key/value pairs. I usually tag or label my resources with:
 
-* __state__: (production, test, lab...)
-* __version__: (the version of the app following [SemVer](http://semver.org/))
-* __channel__:  ("public" if it's accessible from the internet, "internal", "cannary")
+* __state__: production, test, lab...
+* __version__: the version of the app following [SemVer](http://semver.org/)
+* __channel__:  "public", "internal", "cannary"
 * __owner__: who owns the resource. this can be for making your life easier when doing interal billing, or for knowing who to get in contact with if something goes wrong with it.
 
 So, how do you deploy a new version of your application?
