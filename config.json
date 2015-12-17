@@ -6,7 +6,7 @@
   "favicon": "/static/favicon.ico",
 
   "showArchive": true,
-  "showCategories": true,
+  "showCategories": false,
   "showTags": true,
 
   "paginationSize": 10

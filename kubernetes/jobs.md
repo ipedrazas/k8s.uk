@@ -19,25 +19,25 @@ Building a CI pipeline is hard. Using kubernetes simplifies a bit certain aspect
 A job definition is very similar to a Replication controller or a Pod:
 
 
-      apiVersion: extensions/v1beta1
-      kind: Job
-      metadata:
-        name: pi
-      spec:
-        selector:
-          matchLabels:
+    apiVersion: extensions/v1beta1
+    kind: Job
+    metadata:
+      name: pi
+    spec:
+      selector:
+        matchLabels:
+          app: pi
+      template:
+        metadata:
+          name: pi
+          labels:
             app: pi
-        template:
-          metadata:
-            name: pi
-            labels:
-              app: pi
-          spec:
-            containers:
-            - name: pi
-              image: perl
-              command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
-            restartPolicy: Never
+        spec:
+          containers:
+          - name: pi
+            image: perl
+            command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+          restartPolicy: Never
 
 
 Note that the __apiVersion__ uses [extensions](https://github.com/kubernetes/kubernetes/blob/release-1.1/docs/api.md#api-groups). The schema of a job will change once the scheduling features land in version 1.2, but for now, it's very straight forward: define the artifact kind as a job, include the pod template definition and off you go. Another thing to note is the __restartPolicy__, you can set it to Always, OnFailure, or Never, depending on what you think it's appropriate.

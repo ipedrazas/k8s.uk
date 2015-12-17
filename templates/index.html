@@ -3,54 +3,87 @@
 {{end}}
 
 {{define "content"}}
-{{if .Articles}}
+<div class="col-lg-9">
+  {{if .Articles}}
 
-{{range $_, $article := .Articles}}
-<article>
-<p >
-  <a href="{{$article.Slug}}" >{{$article.Title}}</a>
+  {{range $_, $article := .Articles}}
+  <article>
+  <h1><a id="{{$article.Slug}}" href="{{$article.Slug}}">{{$article.Title}}</a></h1>
+
+  <p>
+  {{if or $.Site.Config.Author $article.Author}}
+  <span class="label label-default">by {{if $article.Author}}{{$article.Author}}{{else}}{{$.Site.Config.Author}}{{end}}</span>
+  {{end}}
+
+  {{if $article.Date}}
+  <span class="label label-default">{{$.HumanizeDatetime $article.Date}}</span>
+  {{end}}
+
+  {{if $article.Category}}
+  <a class="label label-success" href="/category/{{$article.Category}}.html">{{$article.Category}}</a>
+  {{end}}
+
   {{if $article.Tags}}
   {{range $_, $tag := $article.Tags}}
-    <a class="label label-default tag pull-right" href="/tag/{{$tag}}.html">{{$tag}}</a><span class="pull-right">&nbsp;</span>
+  <a class="label label-info" href="/tag/{{$tag}}.html">{{$tag}}</a>
   {{end}}
   {{end}}
-</p>
-</article>
-<hr>
-{{end}}
+  </p>
 
-{{else}}
-<h1>Nothing to see here!</h1>
-<hr>
-{{end}}
+  {{$article.HTML $article.Content}}
+  <p class="text-right"><a class="btn btn-default" href="{{$article.Slug}}#disqus_thread">Permalink</a></p>
+  </article>
+  <hr>
+  {{end}}
 
-{{if gt .Site.NumberOfPages 1 }}
-<div class="text-center"><ul class="pagination">
+  {{else}}
+  <h1>Nothing to see here!</h1>
+  <hr>
+  {{end}}
 
-    <li class="
-    {{if eq $.PageNumber 1}}
-    disabled
+  {{if gt .Site.NumberOfPages 1}}
+  <div class="text-center"><ul class="pagination">
+
+      <li class="
+      {{if eq $.PageNumber 1}}
+      disabled
+      {{end}}
+      ">
+      <a href="{{$.PreviousSlug $.PageNumber}}">&laquo;</a>
+      </li>
+
+      {{range $_, $page := .ArrayOfPages}}
+      <li {{if eq $page $.PageNumber}}class="active"{{end}}>
+      <a href="/index{{if ne $page 1}}{{$page}}{{end}}.html">
+        {{$page}}
+      </a>
+      </li>
+      {{end}} {{/* range */}}
+
+      <li class="
+      {{if eq $.PageNumber $.Site.NumberOfPages}}
+      disabled
+      {{end}}
+      ">
+      <a href="{{$.NextSlug $.PageNumber}}">&raquo;</a>
+      </li>
+
+  </ul></div>
+  {{end}} {{/* if */}}
+</div>
+
+<div id="list-of-articles" class="col-lg-3">
+  <div class="list-group">
+    {{range $i, $article := .Articles}}
+    {{if lt $i $.Site.Config.PaginationSize}}
+    <a class="list-group-item" href="#{{$article.Slug}}">{{$article.Title}}</a>
     {{end}}
-    ">
-    <a href="{{$.PreviousSlug $.PageNumber}}">&laquo;</a>
-    </li>
-
-    {{range $_, $page := .ArrayOfPages}}
-    <li {{if eq $page $.PageNumber}}class="active"{{end}}>
-    <a href="/index{{if ne $page 1}}{{$page}}{{end}}.html">
-      {{$page}}
-    </a>
-    </li>
-    {{end}} {{/* range */}}
-
-    <li class="
-    {{if eq $.PageNumber $.Site.NumberOfPages}}
-    disabled
     {{end}}
-    ">
-    <a href="{{$.NextSlug $.PageNumber}}">&raquo;</a>
-    </li>
+    <a class="list-group-item center" href="/archives.html">...</a>
+  </div>
+  {{range $_, $tag := .Site.Tags}}
+  <a class="label label-info" href="/tag/{{$tag}}.html">{{$tag}}</a>
+  {{end}}
+</div>
 
-</ul></div>
-{{end}} {{/* if */}}
 {{end}} {{/* content */}}

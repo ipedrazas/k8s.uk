@@ -9,8 +9,9 @@
     <title>{{template "title" .}}</title>
 
     <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
-    <link rel="icon" href="/static/k8s-logo.png" type="image/x-icon">
-
+    {{if .Site.Config.Favicon}}
+    <link rel="shortcut icon" href="{{.Site.Config.Favicon}}" />
+    {{end}}
 
     {{template "header" .}}
 
@@ -24,69 +25,19 @@
   </head>
 
   <body>
-    <div class="navbar navbar-default navbar-static-top navbar-inverse" role="navigation">
-      <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-1">
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
           <a class="navbar-brand" href="/">{{.Site.Config.Title}}</a>
         </div>
-        {{if or (and .Site.Categories .Site.Config.ShowCategories) (and .Site.Articles .Site.Config.ShowArchive)}}
-        <div class="navbar-collapse collapse">
-          {{if or .Site.Pages (and .Site.Articles .Site.Config.ShowArchive)}}
-          <ul class="nav navbar-nav navbar-right">
-            {{if .Site.Config.ShowArchive}}
-              <li><a href="/pages/about.html">About</a></li>
-            {{end}}
-
-           </ul>
-          {{end}}
-        </div>
-        {{end}}
       </div>
     </div>
 
-    <div class="container col-md-3 col-lg-3">
-      <div class="whitebox"></div>
+    <div class="container">
       {{template "content" .}}
     </div>
-     <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-1">
-            {{range $i, $article := .Articles}}
-
-                <article>
-                  <p>
-                    <a href="{{$article.Slug}}" class="articleTitle">{{$article.Title}}</a>
-                    {{if $article.Tags}}
-                      {{range $_, $tag := $article.Tags}}
-                        <a class="label label-default tag pull-right" href="/tag/{{$tag}}.html">{{$tag}}</a><span class="pull-right">&nbsp;</span>
-                      {{end}}
-                    {{end}}
-
-                      {{$article.HTML $article.Content}}
-
-                  </p>
-                </article>
-                  <hr>
-
-            {{end}}
-      </div>
-
-    <div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
-      <div class="text-center">
-
-        {{template "footer" .}}
-      </div>
-    </div>
-
+    {{template "footer" .}}
     {{template "analytics" .}}
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-  <script src="//getbootstrap.com/dist/js/bootstrap.min.js"></script>
-
   </body>
 </html>
 {{end}}
