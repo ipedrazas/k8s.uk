@@ -79,7 +79,7 @@
     <a class="list-group-item" href="#{{$article.Slug}}">{{$article.Title}}</a>
     {{end}}
     {{end}}
-    <a class="list-group-item text-center" href="/archives.html">...</a>
+    <a class="list-group-item text-center active" href="/archives.html">Show more</a>
   </div>
   {{range $_, $tag := .Site.Tags}}
   <a class="label label-info" href="/tag/{{$tag}}.html">{{$tag}}</a>
