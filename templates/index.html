@@ -72,14 +72,14 @@
   {{end}} {{/* if */}}
 </div>
 
-<div id="list-of-articles" class="col-lg-3">
+<div id="list-of-articles" class="hidden-sm hiddem-md col-lg-3">
   <div class="list-group">
     {{range $i, $article := .Articles}}
     {{if lt $i $.Site.Config.PaginationSize}}
     <a class="list-group-item" href="#{{$article.Slug}}">{{$article.Title}}</a>
     {{end}}
     {{end}}
-    <a class="list-group-item center" href="/archives.html">...</a>
+    <a class="list-group-item text-center" href="/archives.html">...</a>
   </div>
   {{range $_, $tag := .Site.Tags}}
   <a class="label label-info" href="/tag/{{$tag}}.html">{{$tag}}</a>
