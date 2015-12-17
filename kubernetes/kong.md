@@ -4,7 +4,7 @@ author: Álex González
 Using Kong with Kubernetes
 ==========================
 
-If you don't know about [Kong](https://getkong.org) yet you should take a look. It's an Open Source API Gateway, they define themselves as: "The open-source management layer for APIs, delivering high performance and reliability." and they are quite right.
+If you don't know about [Kong](https://getkong.org) yet, you should take a look. It's an Open Source API Gateway, they define themselves as: "The open-source management layer for APIs, delivering high performance and reliability." and they are quite right.
 
 I was playing with Kong lately at work ([jobandtalent.com](http://jobandtalent.com), we are hiring!) and I think that it could be pretty awesome as a entry layer to your microservices platform running in Kubernetes.
 
