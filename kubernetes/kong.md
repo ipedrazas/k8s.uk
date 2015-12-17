@@ -183,3 +183,5 @@ Next steps
 ----------
 
 You have Kong pointed to your cluster, now it's up to your imagination what to do next. I would say try to configure some rate limiting or auth, it's deadly simply. Check them here: https://getkong.org/plugins/
+
+If you have any question or you want to discuss this further let me know at [@agonzalezro](https://twitter.com/agonzalezro).
