@@ -1,5 +1,6 @@
 date: 2015-12-17
 author: Álex González
+tags: kong, microservices
 
 Using Kong with Kubernetes
 ==========================
