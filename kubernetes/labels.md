@@ -44,3 +44,5 @@ You can see where I'm going. You can then go and update a label in the service: 
 Production deployments have a very wide range of situations. Trying to find a golden rule for deployments (standarisation, standarisation) usually doesn't work well, so it's better to define certain patterns that you can adapt to your needs.
 
 Labels are very powerful, and usually they're not used to their maximum potential. The post doesn't try to convince you to change your deployment strategy but to illustrate different ways of doing the same thing, and different use cases of this kubernetes artifact that can change the way you understand your landscape.
+
+If you want to know a bit more about Labels, [here's the documentation](https://cloud.google.com/container-engine/docs/kubectl/label).
