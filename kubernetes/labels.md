@@ -39,6 +39,8 @@ If now you deploy a new Replication controller you will have the following scena
 
 You can see where I'm going. You can then go and update a label in the service: `version=1.0.8` and your service is repointed to the new app. As you can see, the old app is still in the system, rolling back is just a matter of updating the label back to its original value.
 
+        kubectl label pods deep-reports-38x6n version=1.0.8 --overwrite
+
 Production deployments have a very wide range of situations. Trying to find a golden rule for deployments (standarisation, standarisation) usually doesn't work well, so it's better to define certain patterns that you can adapt to your needs.
 
 Labels are very powerful, and usually they're not used to their maximum potential. The post doesn't try to convince you to change your deployment strategy but to illustrate different ways of doing the same thing, and different use cases of this kubernetes artifact that can change the way you understand your landscape.
