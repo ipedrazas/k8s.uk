@@ -1,5 +1,5 @@
 {{define "title"}}
-{{.Site.Config.Title}}
+{{.Config.Title}}
 {{end}}
 
 {{define "content"}}
@@ -11,8 +11,8 @@
   <h1><a id="{{$article.Slug}}" href="{{$article.Slug}}">{{$article.Title}}</a></h1>
 
   <p>
-  {{if or $.Site.Config.Author $article.Author}}
-  <span class="label label-default">by {{if $article.Author}}{{$article.Author}}{{else}}{{$.Site.Config.Author}}{{end}}</span>
+  {{if or $.Config.Author $article.Author}}
+  <span class="label label-default">by {{if $article.Author}}{{$article.Author}}{{else}}{{$.Config.Author}}{{end}}</span>
   {{end}}
 
   {{if $article.Date}}
@@ -30,7 +30,7 @@
   {{end}}
   </p>
 
-  {{$article.HTML $article.Content}}
+  {{$article.Content}}
   <p class="text-right"><a class="btn btn-default" href="{{$article.Slug}}#disqus_thread">Permalink</a></p>
   </article>
   <hr>
@@ -41,7 +41,7 @@
   <hr>
   {{end}}
 
-  {{if gt .Site.NumberOfPages 1}}
+  {{if gt .NumberOfPages 1}}
   <div class="text-center"><ul class="pagination">
 
       <li class="
@@ -61,7 +61,7 @@
       {{end}} {{/* range */}}
 
       <li class="
-      {{if eq $.PageNumber $.Site.NumberOfPages}}
+      {{if eq $.PageNumber $.NumberOfPages}}
       disabled
       {{end}}
       ">
@@ -75,13 +75,13 @@
 <div id="list-of-articles" class="hidden-sm hiddem-md col-lg-3">
   <div class="list-group">
     {{range $i, $article := .Articles}}
-    {{if lt $i $.Site.Config.PaginationSize}}
+    {{if lt $i $.Config.PaginationSize}}
     <a class="list-group-item" href="#{{$article.Slug}}">{{$article.Title}}</a>
     {{end}}
     {{end}}
     <a class="list-group-item text-center active" href="/archives.html">Show more</a>
   </div>
-  {{range $_, $tag := .Site.Tags}}
+  {{range $_, $tag := .Tags}}
   <a class="label label-info" href="/tag/{{$tag}}.html">{{$tag}}</a>
   {{end}}
 </div>
