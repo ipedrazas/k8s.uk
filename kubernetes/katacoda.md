@@ -11,5 +11,5 @@ While thinking of the different aspects we should cover and build I remembered a
 
 So, if you want to familiarise with Kubernetes, I strongly advise you to go there and follow the different tutorials. The great thing about Katacoda is that you do not need anything special, just a good old browser (not too old, please).
 
-![Katacoda](/static/53ebda5b45e1b081ddf7709ffb400606.png)
+<p align="center"><img src="/static/katacoda.png" /></p>
 
