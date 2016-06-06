@@ -14,8 +14,12 @@ h5 {
   font-size: 1.3em;
 }
 
-p, ul li {
+p {
   font-size: 1.2em;
+}
+
+ul li {
+  font-size: 1em;
 }
 
 #list-of-articles {
