@@ -14,11 +14,11 @@ h5 {
   font-size: 1.3em;
 }
 
-p {
+p, ul li {
   font-size: 1.2em;
 }
 
-ul li {
+ul li li, ul li li li, ul li li li li {
   font-size: 1em;
 }
 
