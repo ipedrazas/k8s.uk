@@ -85,6 +85,7 @@ Access using tokens:
 For mode  __ABAC__, also specify `--authorization-policy-file=SOME_FILENAME`.
 The file format is one JSON object per line. There should be no enclosing list or map, just one map per line.
 Each line is a “policy object”. A policy object is a map with the following properties:
+
 * Versioning properties:
     * __apiVersion__, type string; valid values are “abac.authorization.kubernetes.io/v1beta1”. Allows versioning and conversion of the policy format.
     * __kind__, type string: valid values are “Policy”. Allows versioning and conversion of the policy format.
