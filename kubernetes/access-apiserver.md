@@ -69,7 +69,7 @@ If you want to test the access, you can try the following commands:
 
 Access using Basic Auth:
 
-    curl -k -X GET -H   "Authorization: Basic YWRtaW46R0dJZndabjYzaTNOTVdlTg=="   https://52.208.17.199
+    curl -k -X GET -H   "Authorization: Basic YWRtaW46R0dJZndabjYzaTNOTVdlTg=="   https://$API_SERVER
 
 Note that the string `YWRtaW46R0dJZndabjYzaTNOTVdlTg==` is the result of
 
@@ -77,7 +77,7 @@ Note that the string `YWRtaW46R0dJZndabjYzaTNOTVdlTg==` is the result of
 
 Access using tokens:
 
-    curl -k -X GET -H "Authorization: Bearer i2TgpiZFZQNkIydDZzVkxmTHl3Q2hPNn"    https://52.208.17.199
+    curl -k -X GET -H "Authorization: Bearer i2TgpiZFZQNkIydDZzVkxmTHl3Q2hPNn"    https://$API_SERVER
 
 
 ### Policy File Format
