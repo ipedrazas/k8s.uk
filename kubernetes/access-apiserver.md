@@ -7,10 +7,10 @@ Accessing Kubernetes Apiserver
 
 The process to access the api server is very simple. The `apiserver` has a flag that defines what type of access is desired:
 
-* --authorization-mode=AlwaysDeny blocks all requests (used in tests).
-* --authorization-mode=AlwaysAllow allows all requests; use if you don’t need authorization.
-* --authorization-mode=ABAC allows for user-configured authorization policy. ABAC stands for Attribute-Based Access Control.
-* --authorization-mode=Webhook allows for authorization to be driven by a remote service using REST.
+* `--authorization-mode=AlwaysDeny` blocks all requests (used in tests).
+* `--authorization-mode=AlwaysAllow` allows all requests; use if you don’t need authorization.
+* `--authorization-mode=ABAC` allows for user-configured authorization policy. ABAC stands for Attribute-Based Access Control.
+* `--authorization-mode=Webhook` allows for authorization to be driven by a remote service using REST.
 
 To allow Basic Auth and/or tokens, we have to select `ABAC`.
 
@@ -21,46 +21,46 @@ To access the API server via tokens there are 2 things that need to be defined: 
 
 These configuration files have to be passed to the `kube-apiserver` using the following parameters:
 
-* --authorization-mode=ABAC
-* --token-auth-file=/srv/kubernetes/auth_tokens.csv
-* --authorization-policy-file=/srv/kubernetes/auth-policy.json
+* `--authorization-mode=ABAC`
+* `--token-auth-file=/srv/kubernetes/auth_tokens.csv`
+* `--authorization-policy-file=/srv/kubernetes/auth-policy.json`
 
 If you want to allow Basic Auth, you have to specify the file containing the
 
-* --basic-auth-file=/srv/kubernetes/basic_auth.csv
+* `--basic-auth-file=/srv/kubernetes/basic_auth.csv`
 
 
 Example of running the apiserver with those flags:
 
-        /bin/sh -c /usr/local/bin/kube-apiserver --address=127.0.0.1 --etcd-servers=http://127.0.0.1:4001
-        --admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,PersistentVolumeLabel,ResourceQuota
-        --token-auth-file=/srv/kubernetes/auth_tokens.csv
-        --authorization-mode=ABAC
-        --authorization-policy-file=/srv/kubernetes/auth-policy.json
-        --basic-auth-file=/srv/kubernetes/basic_auth.csv
+    /bin/sh -c /usr/local/bin/kube-apiserver --address=127.0.0.1 --etcd-servers=http://127.0.0.1:4001
+    --admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,PersistentVolumeLabel,ResourceQuota
+    --token-auth-file=/srv/kubernetes/auth_tokens.csv
+    --authorization-mode=ABAC
+    --authorization-policy-file=/srv/kubernetes/auth-policy.json
+    --basic-auth-file=/srv/kubernetes/basic_auth.csv
 
 Here are examples of the files used by the `apiserver`:
 
 Example of tokens in `auth_tokens.csv`:
 
-        Wx4WOTOmFoY5yXaoMPtHdnKeFLPYeBBL,admin,admin
-        jD34eFwNrJo9urd7QWLMALOjK7R58j1g,kubelet,kubelet
-        PxgQ4vSloVIhfFwx9WYaj8uke93JVBHh,kube_proxy,kube_proxy
-        i2TgpiZFZQNkIydDZzVkxmTHl3Q2hPNn,ivan,ivan
+    Wx4WOTOmFoY5yXaoMPtHdnKeFLPYeBBL,admin,admin
+    jD34eFwNrJo9urd7QWLMALOjK7R58j1g,kubelet,kubelet
+    PxgQ4vSloVIhfFwx9WYaj8uke93JVBHh,kube_proxy,kube_proxy
+    i2TgpiZFZQNkIydDZzVkxmTHl3Q2hPNn,ivan,ivan
 
 Example of user/password for Basic Auth `basic_auth.csv`:
 
-        GGIfwZn63i3NMWeN,admin,admin
+    GGIfwZn63i3NMWeN,admin,admin
 
 Example of authentication policy file  `auth-policy.json`
 
-        {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"ivan", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
-        {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"admin", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
-        {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"kubelet", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
-        {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"kube_proxy", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
-        {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"kubecfg", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
-        {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"client", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
-        {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"group":"system:serviceaccounts", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"ivan", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"admin", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"kubelet", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"kube_proxy", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"kubecfg", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"user":"client", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
+    {"apiVersion": "abac.authorization.kubernetes.io/v1beta1", "kind": "Policy", "spec": {"group":"system:serviceaccounts", "namespace": "*", "resource": "*", "apiGroup": "*", "nonResourcePath": "*"}}
 
 
 ## Testing
