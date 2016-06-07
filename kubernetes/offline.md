@@ -1,7 +1,9 @@
+---
 date: 2016-05-05
 author: Ivan Pedrazas
 tags: baremetal, offline
 status: draft
+---
 
 Kubernetes Offline
 ==========================
