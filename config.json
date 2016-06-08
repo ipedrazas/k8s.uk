@@ -9,7 +9,7 @@
   "showCategories": false,
   "showTags": true,
 
-  "paginationSize": 10
-  "googleAnalyticsId": "UA-78960031-1",
+  "paginationSize": 10, 
+  "googleAnalyticsId": "UA-78960031-1"
 
 }
