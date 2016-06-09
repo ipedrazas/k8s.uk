@@ -7,7 +7,13 @@ Kubectl vs HTTP API
 
 One of the best things Kubernetes has is its API, however, I've seen a few tools that instead of using the HTTP API use a wrapper on `kubectl`. I tweeted about it and a discussion was created around the differences between `kubectl` and the `HTTP API`.
 
-One thing that I hope it's clear it's that kubectl is designed to be used by people and HTTP API is designed to be used by code.
+One thing that I hope it's clear it's that kubectl is designed to be used by people and HTTP API is designed to be used by code. In fcat, if you look at the [documentation](http://kubernetes.io/docs/api/) you will see that there's a list of differnt APIs and kubectl is under `kubectl CLI`, this is teh list of all the kubernetes APIs:
+
+* Kubernetes API
+* Extension API
+* Autoscaling API
+* Batch API
+* kubectl CLI
 
 So, let's see what these differences are!
 
