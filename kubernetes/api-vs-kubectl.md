@@ -152,6 +152,7 @@ Ok, let's create a namespace, then. The namespace will be defined in a file `new
         metadata:
           name: api-vs-kubectl
 
+All the files used in this post can be found in [our github repo](https://github.com/ipedrazas/k8s.uk/tree/master/code/api-vs-kubelet)
 Now, let's create the namespace:
 
         kubectl create -f new_namespace.yaml
