@@ -12,7 +12,7 @@ This is the tweet:
 <blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">I makes me a bit sad to see tooling around `kubectl` when Kubernetes has such a nice HTTP API...</p>&mdash; Ivan Pedrazas (@ipedrazas) <a href="https://twitter.com/ipedrazas/status/740904502845411328">June 9, 2016</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-One thing that I hope it's clear it's that kubectl is designed to be used by people and HTTP API is designed to be used by code. In fact, if you look at the [documentation](http://kubernetes.io/docs/api/) you will see that there's a list of differnt APIs and kubectl is under `kubectl CLI`, this is teh list of all the kubernetes APIs:
+One thing that I hope it's clear it's that kubectl is designed to be used by people and HTTP API is designed to be used by code. In fact, if you look at the [documentation](http://kubernetes.io/docs/api/) you will see that there's a list of different APIs and kubectl is under `kubectl CLI`, this is the list of all the kubernetes APIs:
 
 * Kubernetes API
 * Extension API
@@ -22,7 +22,7 @@ One thing that I hope it's clear it's that kubectl is designed to be used by peo
 
 So, let's see what these differences are!
 
-In order to create this test, I've spinned a new cluster in AWS. To be able to make remote calls to the API server you either need the token or the user and password for the basic auth:
+In order to create this test, I've spun a new cluster in AWS. To be able to make remote calls to the API server you either need the token or the user and password for the basic auth:
 
 
     root@ip-172-20-0-9:~# cat /srv/kubernetes/basic_auth.csv
@@ -227,6 +227,6 @@ With the API:
 
 In summary, kubectl is a great tool to interact with kubernetes, but remember that there's also a fantastic API that allows you to interact with the cluster also.
 
-What are the main differences? Well, a person should use `kubectl` but a system, or an application would use the API. In fact, if you're making a tool that interacts with kubernetes and you're using `kubectl` under the hood, I bet it's because you feel more confortable with kubectl and not so much with the REST API... But nothing comes free, you trade the knowledge you have of a tool by having to parse text instead of clearly defined objects that the API should return.
+What are the main differences? Well, a person should use `kubectl` but a system, or an application would use the API. In fact, if you're making a tool that interacts with kubernetes and you're using `kubectl` under the hood, I bet it's because you feel more comfortable with kubectl and not so much with the REST API... But nothing comes free, you trade the knowledge you have of a tool by having to parse text instead of clearly defined objects that the API should return.
 
 Truth is, that the API documentation is not great either, so... maybe we should ask to have a bunch of examples that use the API so people can learn faster :)
