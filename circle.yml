@@ -1,6 +1,6 @@
 dependencies:
   override:
-    - wget https://github.com/agonzalezro/polo/releases/download/v1.1/polo-linux-amd64
+    - wget https://github.com/agonzalezro/polo/releases/download/v1.1.4/polo-linux-amd64
     - chmod a+x polo-linux-amd64
     - git config --global user.email "ipedrazas@gmail.com"
     - git config --global user.name "Ivan Pedrazas"
