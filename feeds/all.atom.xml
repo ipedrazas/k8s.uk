@@ -1,0 +1,132 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>k8s.uk</title>
+  <link href="http://k8s.uk" />
+  <updated></updated>
+
+  
+  
+  <entry>
+    <title>Kubectl vs HTTP API</title>
+    <link href="http://k8s.uk/kubectl-vs-http-api.html" />
+    
+    <updated>2016-06-09 00:00:00 +0000 UTC</updated>
+    
+    <summary>
+      <p>One of the best things Kubernetes has is its API, however, I&rsquo;ve seen a few tools that instead of using the HTTP API use a wrapper on <code>kubectl</code>. I tweeted about it and a discussion was created around the differences between <code>kubectl</code> and the <code>HTTP API</code>.</p>
+
+    </summary>
+    <author>
+      <name>Ivan Pedrazas</name>
+    </author>
+  </entry>
+  
+  <entry>
+    <title>Accessing Kubernetes Apiserver</title>
+    <link href="http://k8s.uk/accessing-kubernetes-apiserver.html" />
+    
+    <updated>2016-06-06 00:00:00 +0000 UTC</updated>
+    
+    <summary>
+      <p>The process to access the api server is very simple. The <code>apiserver</code> has a flag that defines what type of access is desired:</p>
+
+    </summary>
+    <author>
+      <name>Ivan Pedrazas</name>
+    </author>
+  </entry>
+  
+  <entry>
+    <title>Kubernetes Play</title>
+    <link href="http://k8s.uk/kubernetes-play.html" />
+    
+    <updated>2016-05-10 00:00:00 +0000 UTC</updated>
+    
+    <summary>
+      <p>Recently we were talking about building a kubernetes cluster to let people play and familiarise with Kuberentes. However, building such cluster is not an easy task. Security was our main concern. Not because kubernetes is not secure enough, but because having a kubernetes cluster exposed to the public could be dangerous.</p>
+
+    </summary>
+    <author>
+      <name>Ivan Pedrazas</name>
+    </author>
+  </entry>
+  
+  <entry>
+    <title>Using Kong with Kubernetes</title>
+    <link href="http://k8s.uk/using-kong-with-kubernetes.html" />
+    
+    <updated>2015-12-17 00:00:00 +0000 UTC</updated>
+    
+    <summary>
+      <p>If you don&rsquo;t know about <a href="https://getkong.org">Kong</a> yet, you should take a look. It&rsquo;s an Open Source API Gateway, they define themselves as: &ldquo;The open-source management layer for APIs, delivering high performance and reliability.&rdquo; and they are quite right.</p>
+
+    </summary>
+    <author>
+      <name>Ivan Pedrazas</name>
+    </author>
+  </entry>
+  
+  <entry>
+    <title>Deploy by Labels</title>
+    <link href="http://k8s.uk/deploy-by-labels.html" />
+    
+    <updated>2015-12-04 15:38:00 +0000 UTC</updated>
+    
+    <summary>
+      <p>Labels in kubernetes are the only way of grouping, filtering and selecting resources. In my experience, we do not use labels enough. Unlike with AWS, you can define as many labels as you want, so, why are we not truly squeezing all the potential of labels?</p>
+
+    </summary>
+    <author>
+      <name>Ivan Pedrazas</name>
+    </author>
+  </entry>
+  
+  <entry>
+    <title>Private Registry</title>
+    <link href="http://k8s.uk/private-registry.html" />
+    
+    <updated>2015-12-03 09:58:00 +0000 UTC</updated>
+    
+    <summary>
+      <p>The first time we tried to use a private registry in Kubernetes we got bitten by a weird bug: the format of the <code>.dockercfg</code>.</p>
+
+    </summary>
+    <author>
+      <name>Ivan Pedrazas</name>
+    </author>
+  </entry>
+  
+  <entry>
+    <title>Jobs</title>
+    <link href="http://k8s.uk/jobs.html" />
+    
+    <updated>2015-11-30 12:08:00 +0000 UTC</updated>
+    
+    <summary>
+      <p>No, this post is not about recruitment, it&rsquo;s about the <a href="https://github.com/kubernetes/kubernetes/blob/release-1.1/docs/user-guide/jobs.md"><strong>Jobs</strong> artifact</a> that was introduced with version 1.1.</p>
+
+    </summary>
+    <author>
+      <name>Ivan Pedrazas</name>
+    </author>
+  </entry>
+  
+  <entry>
+    <title>Kubernetes, a blog</title>
+    <link href="http://k8s.uk/kubernetes-a-blog.html" />
+    
+    <updated>2015-11-26 11:57:00 +0000 UTC</updated>
+    
+    <summary>
+      <p>One of the things that I really missed during my journey to Docker was to have a place to put all the notes, posts and leassons learnt&hellip; which end up scattered all over gists, posts and text files all over the place.</p>
+
+    </summary>
+    <author>
+      <name>Ivan Pedrazas</name>
+    </author>
+  </entry>
+  
+  
+</feed>

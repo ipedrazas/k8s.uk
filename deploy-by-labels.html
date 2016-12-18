@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+Deploy by Labels | k8s.uk
+</title>
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+
+    
+  </head>
+
+  <body>
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">k8s.uk</a>
+        </div>
+        <nav class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/archive.html">Archive</a></li>
+            <li><a href="/pages/about.html">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+      
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <h1>Deploy by Labels</h1>
+
+  <p>
+    
+    <span class="label label-default">by Ivan Pedrazas</span>
+
+    
+    <span class="label label-default">2015-12-04 15:38</span>
+    
+
+    
+    <a class="label label-success" href="/category/kubernetes.html">kubernetes</a>
+    
+
+    
+    
+    <a class="label label-info" href="/tag/management.html">management</a>
+    
+    <a class="label label-info" href="/tag/labels.html">labels</a>
+    
+    <a class="label label-info" href="/tag/core.html">core</a>
+    
+    
+  </p>
+
+  <p>Labels in kubernetes are the only way of grouping, filtering and selecting resources. In my experience, we do not use labels enough. Unlike with AWS, you can define as many labels as you want, so, why are we not truly squeezing all the potential of labels?</p>
+
+<p>I&rsquo;d say it&rsquo;s because we&rsquo;re not use to, and because we lack clear use cases. Yes, it drills down to we getting used to organise and manage things in a specific way.</p>
+
+<p>In my experience, deployments is one of the parts where being smart with your labels can take you a very long way.</p>
+
+<p>Have you ever done a deployment where everything went well but for a non technical issue you had to roll back? something like &ldquo;Oh, God, that promotion cannot go live just yet&hellip; ROLLBACK! ROLLBACK!!&rdquo;</p>
+
+<p>Labels are key/value pairs. I usually tag or label my resources with:</p>
+
+<ul>
+<li><strong>state</strong>: production, test, lab&hellip;</li>
+<li><strong>version</strong>: the version of the app following <a href="http://semver.org/">SemVer</a></li>
+<li><strong>channel</strong>:  &ldquo;public&rdquo;, &ldquo;internal&rdquo;, &ldquo;cannary&rdquo;</li>
+<li><strong>owner</strong>: who owns the resource. this can be for making your life easier when doing interal billing, or for knowing who to get in contact with if something goes wrong with it.</li>
+</ul>
+
+<p>So, how do you deploy a new version of your application?</p>
+
+<p>Let&rsquo;s assume the initial state is this:</p>
+
+<ul>
+<li>Replication Controller: deep-frontend, replicas: 3</li>
+<li>Pod: deep-reports-38x6n (state: production, version: 1.0.7, channel: public, owner: ipedrazas)</li>
+<li>Service: selector state=production, channel=public</li>
+</ul>
+
+<p>Note that your app is available through the service and the service binds to the pods that have the labels <code>state=production</code>,  <code>channel=public</code> and <code>version= 1.0.7</code>.</p>
+
+<p>If now you deploy a new Replication controller you will have the following scenario:</p>
+
+<ul>
+<li>Replication Controller: deep-frontend, replicas: 3</li>
+<li>Replication Controller: deep-frontend_new, replicas: 3</li>
+<li>Pod: deep-frontend-38x6n (state: production, version: 1.0.7, channel: public, owner: ipedrazas)</li>
+<li>Pod: deep-frontend_new-jag1p (state: production, version: 1.0.8, channel: public, owner: ipedrazas)</li>
+<li>Service: selector state=production, channel=public, version=1.0.7</li>
+</ul>
+
+<p>You can see where I&rsquo;m going. You can then go and update a label in the service: <code>version=1.0.8</code> and your service is repointed to the new app. As you can see, the old app is still in the system, rolling back is just a matter of updating the label back to its original value.</p>
+
+<pre><code>    kubectl label pods deep-reports-38x6n version=1.0.8 --overwrite
+</code></pre>
+
+<p>Production deployments have a very wide range of situations. Trying to find a golden rule for deployments (standarisation, standarisation) usually doesn&rsquo;t work well, so it&rsquo;s better to define certain patterns that you can adapt to your needs.</p>
+
+<p>Labels are very powerful, and usually they&rsquo;re not used to their maximum potential. The post doesn&rsquo;t try to convince you to change your deployment strategy but to illustrate different ways of doing the same thing, and different use cases of this kubernetes artifact that can change the way you understand your landscape.</p>
+
+<p>If you want to know a bit more about Labels, <a href="https://cloud.google.com/container-engine/docs/kubectl/label">here&rsquo;s the documentation</a>.</p>
+
+
+  
+
+
+  
+
+
+</div>
+
+
+    </div>
+    
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <div class="text-center">
+    <p>
+    k8s.uk is made with
+    <span class="glyphicon glyphicon-heart"></span> by
+    <a href="http://twitter.com/agonzalezro">@agonzalezro</a> and <a href="https://twitter.com/ipedrazas">@ipedrazas</a>
+    </p>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
+    
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-78960031-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+
+  </body>
+</html>

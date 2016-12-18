@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+Jobs | k8s.uk
+</title>
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+
+    
+  </head>
+
+  <body>
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">k8s.uk</a>
+        </div>
+        <nav class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/archive.html">Archive</a></li>
+            <li><a href="/pages/about.html">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+      
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <h1>Jobs</h1>
+
+  <p>
+    
+    <span class="label label-default">by Ivan Pedrazas</span>
+
+    
+    <span class="label label-default">2015-11-30 12:08</span>
+    
+
+    
+    <a class="label label-success" href="/category/kubernetes.html">kubernetes</a>
+    
+
+    
+    
+    <a class="label label-info" href="/tag/job.html">job</a>
+    
+    <a class="label label-info" href="/tag/core.html">core</a>
+    
+    
+  </p>
+
+  <p>No, this post is not about recruitment, it&rsquo;s about the <a href="https://github.com/kubernetes/kubernetes/blob/release-1.1/docs/user-guide/jobs.md"><strong>Jobs</strong> artifact</a> that was introduced with version 1.1.</p>
+
+<p>Jobs are the way in Kubernetes of running on-off containers (or pods). Until now, to run a container you could define a pod and schedule it without a replication controller. Now, we have the concept of a &ldquo;job&rdquo;. In reality, &ldquo;Task&rdquo; would be more appropriate, but as we can see in the roadmap, scheduling jobs will come in version 1.2.</p>
+
+<p>If we read the definition in the docs it says:</p>
+
+<pre><code>A job creates one or more pods and ensures that a specified number of them successfully terminate. As pods successfully complete, the job tracks the successful completions. When a specified number of successful completions is reached, the job itself is complete. Deleting a Job will cleanup the pods it created.
+</code></pre>
+
+<p>So, What can we do with jobs now? One of the things we do is to run Integration Test. You deploy your artifacts: pods, replication controllers, and servcies and then, we run a job to test that everything works as expected.</p>
+
+<p>Building a CI pipeline is hard. Using kubernetes simplifies a bit certain aspects (like the deployment) but it makes harder other bits (like knowing when everything is ready). We&rsquo;re preparing a big post about CI, so, stay tunned.</p>
+
+<p>A job definition is very similar to a Replication controller or a Pod:</p>
+
+<pre><code>apiVersion: extensions/v1beta1
+kind: Job
+metadata:
+  name: pi
+spec:
+  selector:
+    matchLabels:
+      app: pi
+  template:
+    metadata:
+      name: pi
+      labels:
+        app: pi
+    spec:
+      containers:
+      - name: pi
+        image: perl
+        command: [&quot;perl&quot;,  &quot;-Mbignum=bpi&quot;, &quot;-wle&quot;, &quot;print bpi(2000)&quot;]
+      restartPolicy: Never
+</code></pre>
+
+<p>Note that the <strong>apiVersion</strong> uses <a href="https://github.com/kubernetes/kubernetes/blob/release-1.1/docs/api.md#api-groups">extensions</a>. The schema of a job will change once the scheduling features land in version 1.2, but for now, it&rsquo;s very straight forward: define the artifact kind as a job, include the pod template definition and off you go. Another thing to note is the <strong>restartPolicy</strong>, you can set it to Always, OnFailure, or Never, depending on what you think it&rsquo;s appropriate.</p>
+
+
+  
+
+
+  
+
+
+</div>
+
+
+    </div>
+    
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <div class="text-center">
+    <p>
+    k8s.uk is made with
+    <span class="glyphicon glyphicon-heart"></span> by
+    <a href="http://twitter.com/agonzalezro">@agonzalezro</a> and <a href="https://twitter.com/ipedrazas">@ipedrazas</a>
+    </p>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
+    
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-78960031-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+
+  </body>
+</html>

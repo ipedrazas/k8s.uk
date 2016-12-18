@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+Using Kong with Kubernetes | k8s.uk
+</title>
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+
+    
+  </head>
+
+  <body>
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">k8s.uk</a>
+        </div>
+        <nav class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/archive.html">Archive</a></li>
+            <li><a href="/pages/about.html">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+      
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <h1>Using Kong with Kubernetes</h1>
+
+  <p>
+    
+    <span class="label label-default">by Álex González</span>
+
+    
+    <span class="label label-default">2015-12-17</span>
+    
+
+    
+    <a class="label label-success" href="/category/kubernetes.html">kubernetes</a>
+    
+
+    
+    
+    <a class="label label-info" href="/tag/kong.html">kong</a>
+    
+    <a class="label label-info" href="/tag/microservices.html">microservices</a>
+    
+    
+  </p>
+
+  <p>If you don&rsquo;t know about <a href="https://getkong.org">Kong</a> yet, you should take a look. It&rsquo;s an Open Source API Gateway, they define themselves as: &ldquo;The open-source management layer for APIs, delivering high performance and reliability.&rdquo; and they are quite right.</p>
+
+<p>I was playing with Kong lately at work (<a href="http://jobandtalent.com">jobandtalent.com</a>, we are hiring!) and I think that it could be pretty awesome as a entry layer to your microservices platform running in Kubernetes.</p>
+
+<p>For the sake of simplicity I will not run Kong in Kubernetes, but it shouldn&rsquo;t be so difficult since <a href="https://getkong.org/install/">they already provide Docker images</a>. Also, running Kong on the same cluster you will be able to use internal networking between pods: win-win.</p>
+
+<p>So, what will I show?</p>
+
+<ul>
+<li>I will deploy a Kubernetes with 2 pods (our 2 microservices) &amp;</li>
+<li>I will install Kong locally and configure it to point to this 2 services.</li>
+</ul>
+
+<h2>Go &amp; packing</h2>
+
+<p>I&rsquo;ve created a small Go app that will show the value of an environment variable when you <code>GET /</code>:</p>
+
+<pre><code>package main
+
+import (
+  &quot;fmt&quot;
+  &quot;log&quot;
+  &quot;net/http&quot;
+  &quot;os&quot;
+)
+
+func main() {
+  http.HandleFunc(&quot;/&quot;, func(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, os.Getenv(&quot;TEST_RESULT&quot;))
+  })
+
+  log.Fatal(http.ListenAndServe(&quot;:8080&quot;, nil))
+}
+</code></pre>
+
+<p>Now we will build the application to later pack it in our image. Remember that if you are in Mac you will need to cross-compile the app to work on Linux:</p>
+
+<pre><code>$ GOOS=linux go build
+</code></pre>
+
+<p>We can pack it into our images now. For doing so we need a <code>Dockerfile</code>. It&rsquo;s a simple binary, so the <code>Dockerfile</code> is not complex at all:</p>
+
+<pre><code>FROM scratch
+ADD app /
+ENTRYPOINT [&quot;/app&quot;]
+</code></pre>
+
+<p>Cool! What can we do now with our shiny image? Yes, you are right! Push it to the hub:</p>
+
+<pre><code>$ docker build -t agonzalezro/kong-test .
+$ docker push agonzalezro/kong-test
+</code></pre>
+
+<h2>k8s</h2>
+
+<p>We have our image on the registry and all we need now is running it on Kubernetes. I am using <a href="https://cloud.google.com/container-engine/">Google Container Engine</a> for deploying this, but you can use whatever you prefer.</p>
+
+<p>Let&rsquo;s create our RCs &amp; services:</p>
+
+<pre><code># rc1.yml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: api1
+spec:
+  selector:
+    name: api
+    version: first
+  template:
+    metadata:
+      labels:
+        name: api
+        version: first
+    spec:
+      containers:
+        - name: app
+          image: agonzalezro/kong-test
+          env:
+            - name: TEST_RESULT
+              value: &quot;This is the first app&quot;
+
+# rc2.yml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: api2
+spec:
+  selector:
+    name: api
+    version: second
+  template:
+    metadata:
+      labels:
+        name: api
+        version: second
+    spec:
+      containers:
+        - name: app
+          image: agonzalezro/kong-test
+          env:
+            - name: TEST_RESULT
+              value: &quot;Second!&quot;
+
+# svc1.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1-svc
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    name: api
+    version: first
+
+# svc2.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2-svc
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    name: api
+    version: second
+</code></pre>
+
+<p>And now run it:</p>
+
+<pre><code>$ kubectl create -f rc1.yml -f rc2.yml -f svc1.yml -f svc2.yml
+</code></pre>
+
+<p>Wait for the service and the pods to be ready and check their IPS:</p>
+
+<pre><code>$ kubectl get services
+NAME         CLUSTER_IP      EXTERNAL_IP      PORT(S)   SELECTOR                  AGE
+app1-svc     10.159.242.86   130.211.89.175   80/TCP    name=api,version=first    17m
+app2-svc     10.159.246.93   104.155.53.175   80/TCP    name=api,version=second   17m
+kubernetes   10.159.240.1    &lt;none&gt;           443/TCP   &lt;none&gt;                    1h
+</code></pre>
+
+<h2>Kong</h2>
+
+<p>Follow the instruction here: <a href="https://getkong.org/install/docker/">https://getkong.org/install/docker/</a> to install Kong locally.</p>
+
+<p>Yeah! We have it up &amp; running so let&rsquo;s point it to our shinny cluster. We need to use Kong API for that (port <code>:8001</code>):</p>
+
+<pre><code>$ http http://dockerhost:8001/apis/ name=first upstream_url=http://130.211.89.175 request_path=/first strip_request_path=true
+$ http http://dockerhost:8001/apis/ name=second upstream_url=http://104.155.53.175 request_path=/second strip_request_path=true
+</code></pre>
+
+<p>What we did here? We set up two new endpoints <code>/first</code> &amp; <code>/second</code> that are pointing to the both Kubernetes services previously created. We could have done it with DNS as well using <code>request_host</code> instead.</p>
+
+<p>Lets call Kong on the port <code>:8000</code> to use them:</p>
+
+<pre><code>$ http http://dockerhost:8000/first
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Length: 21
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 17 Dec 2015 21:43:41 GMT
+Via: kong/0.5.4
+
+This is the first app
+
+$ http http://dockerhost:8000/second
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Length: 7
+Content-Type: text/plain; charset=utf-8
+Date: Thu, 17 Dec 2015 21:43:44 GMT
+Via: kong/0.5.4
+
+Second!
+</code></pre>
+
+<p>\o/ We did it!</p>
+
+<h2>Next steps</h2>
+
+<p>You have Kong pointed to your cluster, now it&rsquo;s up to your imagination what to do next. I would say try to configure some rate limiting or auth, it&rsquo;s deadly simply. Check them here: <a href="https://getkong.org/plugins/">https://getkong.org/plugins/</a></p>
+
+<p>If you have any question or you want to discuss this further let me know at <a href="https://twitter.com/agonzalezro">@agonzalezro</a>.</p>
+
+
+  
+
+
+  
+
+
+</div>
+
+
+    </div>
+    
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <div class="text-center">
+    <p>
+    k8s.uk is made with
+    <span class="glyphicon glyphicon-heart"></span> by
+    <a href="http://twitter.com/agonzalezro">@agonzalezro</a> and <a href="https://twitter.com/ipedrazas">@ipedrazas</a>
+    </p>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
+    
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-78960031-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+
+  </body>
+</html>

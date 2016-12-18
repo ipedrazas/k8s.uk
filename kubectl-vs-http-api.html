@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+Kubectl vs HTTP API | k8s.uk
+</title>
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+
+    
+  </head>
+
+  <body>
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">k8s.uk</a>
+        </div>
+        <nav class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/archive.html">Archive</a></li>
+            <li><a href="/pages/about.html">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+      
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <h1>Kubectl vs HTTP API</h1>
+
+  <p>
+    
+    <span class="label label-default">by Ivan Pedrazas</span>
+
+    
+    <span class="label label-default">2016-06-09</span>
+    
+
+    
+    <a class="label label-success" href="/category/kubernetes.html">kubernetes</a>
+    
+
+    
+    
+    <a class="label label-info" href="/tag/security.html">security</a>
+    
+    <a class="label label-info" href="/tag/api.html">api</a>
+    
+    <a class="label label-info" href="/tag/utils.html">utils</a>
+    
+    
+  </p>
+
+  <p>One of the best things Kubernetes has is its API, however, I&rsquo;ve seen a few tools that instead of using the HTTP API use a wrapper on <code>kubectl</code>. I tweeted about it and a discussion was created around the differences between <code>kubectl</code> and the <code>HTTP API</code>.</p>
+
+<p>This is the tweet:</p>
+
+<p><blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">I makes me a bit sad to see tooling around <code>kubectl</code> when Kubernetes has such a nice HTTP API&hellip;</p>&mdash; Ivan Pedrazas (@ipedrazas) <a href="https://twitter.com/ipedrazas/status/740904502845411328">June 9, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>One thing that I hope it&rsquo;s clear it&rsquo;s that kubectl is designed to be used by people and HTTP API is designed to be used by code. In fact, if you look at the <a href="http://kubernetes.io/docs/api/">documentation</a> you will see that there&rsquo;s a list of different APIs and kubectl is under <code>kubectl CLI</code>, this is the list of all the kubernetes APIs:</p>
+
+<ul>
+<li>Kubernetes API</li>
+<li>Extension API</li>
+<li>Autoscaling API</li>
+<li>Batch API</li>
+<li>kubectl CLI</li>
+</ul>
+
+<p>So, let&rsquo;s see what these differences are!</p>
+
+<p>In order to create this test, I&rsquo;ve spun a new cluster in AWS. To be able to make remote calls to the API server you either need the token or the user and password for the basic auth:</p>
+
+<pre><code>root@ip-172-20-0-9:~# cat /srv/kubernetes/basic_auth.csv
+PFK15d8JoTczqb3T,admin,admin
+
+# We need to base64 encode the user/password
+
+echo -n &quot;admin:PFK15d8JoTczqb3T&quot; | base64
+
+root@ip-172-20-0-9:~# cat /srv/kubernetes/known_tokens.csv
+iHNCmbTQCM4DRoN66PwEDqTFo2RA7JtJ,admin,admin
+59OcyDFhgBlqutaWzU7jxxMSAbVQs3oU,kubelet,kubelet
+jCbn8QSROs0gE525I7MIl0G1V7TEsXT4,kube_proxy,kube_proxy
+</code></pre>
+
+<p><strong>Token:</strong> <code>iHNCmbTQCM4DRoN66PwEDqTFo2RA7JtJ,admin,admin</code></p>
+
+<p><strong>Basic Auth:</strong> <code>YWRtaW46UEZLMTVkOEpvVGN6cWIzVA==</code></p>
+
+<p><strong>API_SERVER</strong>: <code>https://52.51.69.149</code></p>
+
+<p>Let&rsquo;s export these values so we can re-use them easily:</p>
+
+<pre><code>export TOKEN=iHNCmbTQCM4DRoN66PwEDqTFo2RA7JtJ
+export AUTH=YWRtaW46UEZLMTVkOEpvVGN6cWIzVA==
+export API_SERVER=https://52.51.69.149
+</code></pre>
+
+<p>Let&rsquo;s test that the authentication works:</p>
+
+<pre><code>-&gt; % curl -k -X GET -H &quot;Authorization: Bearer $TOKEN&quot; $API_SERVER
+    {
+      &quot;paths&quot;: [
+        &quot;/api&quot;,
+        &quot;/api/v1&quot;,
+        &quot;/apis&quot;,
+        &quot;/apis/apps&quot;,
+        &quot;/apis/apps/v1alpha1&quot;,
+        &quot;/apis/autoscaling&quot;,
+        &quot;/apis/autoscaling/v1&quot;,
+        &quot;/apis/batch&quot;,
+        &quot;/apis/batch/v1&quot;,
+        &quot;/apis/batch/v2alpha1&quot;,
+        &quot;/apis/extensions&quot;,
+        &quot;/apis/extensions/v1beta1&quot;,
+        &quot;/apis/policy&quot;,
+        &quot;/apis/policy/v1alpha1&quot;,
+        &quot;/apis/rbac.authorization.k8s.io&quot;,
+        &quot;/apis/rbac.authorization.k8s.io/v1alpha1&quot;,
+        &quot;/healthz&quot;,
+        &quot;/healthz/ping&quot;,
+        &quot;/logs/&quot;,
+        &quot;/metrics&quot;,
+        &quot;/swaggerapi/&quot;,
+        &quot;/ui/&quot;,
+        &quot;/version&quot;
+      ]
+    }
+</code></pre>
+
+<p>We will do basic auth also, for completion:</p>
+
+<pre><code>curl -k -X GET -H &quot;Authorization: Basic $AUTH&quot; $API_SERVER
+</code></pre>
+
+<h3>List of Nodes</h3>
+
+<p>Kubectl:</p>
+
+<pre><code>kubectl get nodes
+</code></pre>
+
+<p>API:</p>
+
+<pre><code>curl -k -X GET -H &quot;Authorization: Bearer $TOKEN&quot; $API_SERVER/api/v1/nodes
+</code></pre>
+
+<p>If you have <code>jq</code> this command will be more useful:</p>
+
+<pre><code>curl -k -X GET -H &quot;Authorization: Bearer $TOKEN&quot; $API_SERVER/api/v1/nodes | jq '.items[].status.addresses
+</code></pre>
+
+<p>Let&rsquo;s get a list of pods:</p>
+
+<pre><code>kubectl get pods
+</code></pre>
+
+<p>This command returns nothing because we haven&rsquo;t created a single object yet&hellip; but, we can do:</p>
+
+<pre><code>kubectl get pods --all-namespaces
+
+
+NAMESPACE     NAME                                                               READY     STATUS             RESTARTS   AGE
+kube-system   elasticsearch-logging-v1-7n3fn                                     1/1       Running            0          1h
+kube-system   elasticsearch-logging-v1-qcr9m                                     1/1       Running            0          1h
+kube-system   fluentd-elasticsearch-ip-172-20-0-166.eu-west-1.compute.internal   1/1       Running            0          1h
+kube-system   fluentd-elasticsearch-ip-172-20-0-167.eu-west-1.compute.internal   1/1       Running            0          1h
+kube-system   heapster-v1.1.0.beta2-2783873945-91yz7                             4/4       Running            0          1h
+kube-system   kibana-logging-v1-f4q1e                                            0/1       CrashLoopBackOff   16         1h
+kube-system   kube-proxy-ip-172-20-0-166.eu-west-1.compute.internal              1/1       Running            0          1h
+kube-system   kube-proxy-ip-172-20-0-167.eu-west-1.compute.internal              1/1       Running            0          1h
+kube-system   kubernetes-dashboard-v1.1.0-beta1-imh41                            1/1       Running            0          1h
+kube-system   monitoring-influxdb-grafana-v3-12tud                               2/2       Running            0          1h
+</code></pre>
+
+<p>Excellent, let&rsquo;s do the http query now:</p>
+
+<pre><code>curl -k -X GET -H &quot;Authorization: Bearer $TOKEN&quot; $API_SERVER/api/v1/pods
+</code></pre>
+
+<p>Result is pretty large, so, <a href="https://gist.github.com/ipedrazas/0baf49dd82db6730db8fab9816353d3c">let&rsquo;s gist it</a>:</p>
+
+<pre><code>{
+  &quot;kind&quot;: &quot;PodList&quot;,
+  &quot;apiVersion&quot;: &quot;v1&quot;,
+  &quot;metadata&quot;: {
+    &quot;selfLink&quot;: &quot;/api/v1/pods&quot;,
+    &quot;resourceVersion&quot;: &quot;1172&quot;
+  },
+  &quot;items&quot;: [
+    {
+     &quot;metadata&quot;: {
+     &quot;name&quot;: &quot;elasticsearch-logging-v1-7n3fn&quot;,
+     &quot;generateName&quot;: &quot;elasticsearch-logging-v1-&quot;,
+     &quot;namespace&quot;: &quot;kube-system&quot;,
+     &quot;selfLink&quot;: &quot;/api/v1/namespaces/kube-system/pods/elasticsearch-logging-v1-7n3fn&quot;,
+     &quot;uid&quot;: &quot;19617fb6-2e4d-11e6-a8cc-0a800fdf3429&quot;,
+     ...
+</code></pre>
+
+<p>Ok, let&rsquo;s create a namespace, then. The namespace will be defined in a file <code>new_namespace.yaml</code> with the content:</p>
+
+<pre><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: api-vs-kubectl
+</code></pre>
+
+<p>All the files used in this post can be found in <a href="https://github.com/ipedrazas/k8s.uk/tree/master/code/api-vs-kubelet">our github repo</a>
+Now, let&rsquo;s create the namespace:</p>
+
+<pre><code>kubectl create -f new_namespace.yaml
+</code></pre>
+
+<p>Now via HTTP API</p>
+
+<pre><code>curl -k -H &quot;Content-Type: application/yaml&quot; -H &quot;Authorization: Bearer $TOKEN&quot; -XPOST -d&quot;$(cat api_ns.yaml)&quot; $API_SERVER/api/v1/namespaces
+{
+  &quot;kind&quot;: &quot;Namespace&quot;,
+  &quot;apiVersion&quot;: &quot;v1&quot;,
+  &quot;metadata&quot;: {
+    &quot;name&quot;: &quot;api&quot;,
+    &quot;selfLink&quot;: &quot;/api/v1/namespaces/api&quot;,
+    &quot;uid&quot;: &quot;aee75ba2-2e5a-11e6-a8cc-0a800fdf3429&quot;,
+    &quot;resourceVersion&quot;: &quot;1421&quot;,
+    &quot;creationTimestamp&quot;: &quot;2016-06-09T15:56:09Z&quot;
+  },
+  &quot;spec&quot;: {
+    &quot;finalizers&quot;: [
+      &quot;kubernetes&quot;
+    ]
+  },
+  &quot;status&quot;: {
+    &quot;phase&quot;: &quot;Active&quot;
+  }
+</code></pre>
+
+<p>Now, let&rsquo;s create some containers:</p>
+
+<pre><code>kubectl create -f kubectl_nginx.yaml --namespace=kubectl
+</code></pre>
+
+<p>With our API:</p>
+
+<pre><code>curl -k -H &quot;Content-Type: application/yaml&quot; -H &quot;Authorization: Bearer $TOKEN&quot; -XPOST -d&quot;$(cat api_nginx.yaml)&quot; $API_SERVER/api/v1/namespaces/api/replicationcontrollers
+</code></pre>
+
+<p>Now, if we pull all the pods we will see that we have the same exepected results:</p>
+
+<pre><code>NAMESPACE     NAME                                                               READY     STATUS             RESTARTS   AGE
+kube-system   elasticsearch-logging-v1-7n3fn                                     1/1       Running            0          1h
+kube-system   elasticsearch-logging-v1-qcr9m                                     1/1       Running            0          1h
+kube-system   fluentd-elasticsearch-ip-172-20-0-166.eu-west-1.compute.internal   1/1       Running            0          1h
+kube-system   fluentd-elasticsearch-ip-172-20-0-167.eu-west-1.compute.internal   1/1       Running            0          1h
+kube-system   heapster-v1.1.0.beta2-2783873945-91yz7                             4/4       Running            0          1h
+kube-system   kibana-logging-v1-f4q1e                                            0/1       CrashLoopBackOff   25         1h
+kube-system   kube-proxy-ip-172-20-0-166.eu-west-1.compute.internal              1/1       Running            0          1h
+kube-system   kube-proxy-ip-172-20-0-167.eu-west-1.compute.internal              1/1       Running            0          1h
+kube-system   kubernetes-dashboard-v1.1.0-beta1-imh41                            1/1       Running            0          1h
+kube-system   monitoring-influxdb-grafana-v3-12tud                               2/2       Running            0          1h
+kubectl       nginx-we1fb                                                        1/1       Running            0          6m
+api           nginx-7nnad                                                        1/1       Running            0          46s
+</code></pre>
+
+<p>It&rsquo;s clear that the CRUD is covered by both, the API and kubectl, let&rsquo;s scale up/down pods:</p>
+
+<pre><code>kubectl scale rc nginx --replicas=3 --namespace=kubectl
+NAME          READY     STATUS    RESTARTS   AGE
+nginx-onnme   1/1       Running   0          8s
+nginx-p3zwa   1/1       Running   0          8s
+nginx-we1fb   1/1       Running   0          8m
+</code></pre>
+
+<p>With the API, we&rsquo;re using PUT, that updates the object, so, we have to re-submit the modified object</p>
+
+<pre><code>curl -k -H &quot;Content-Type: application/yaml&quot; -H &quot;Authorization: Bearer $TOKEN&quot; -XPUT -d&quot;$(cat api_nginx-3.yaml)&quot; $API_SERVER/api/v1/namespaces/api/replicationcontrollers/nginx
+</code></pre>
+
+<p>What about watching resources for changes?</p>
+
+<pre><code>watch kubectl get pods
+</code></pre>
+
+<p>With the API:</p>
+
+<pre><code>curl -k -X GET -H &quot;Authorization: Bearer $TOKEN&quot;   $API_SERVER/api/v1/pods?watch=true
+</code></pre>
+
+<p>In summary, kubectl is a great tool to interact with kubernetes, but remember that there&rsquo;s also a fantastic API that allows you to interact with the cluster also.</p>
+
+<p>What are the main differences? Well, a person should use <code>kubectl</code> but a system, or an application would use the API. In fact, if you&rsquo;re making a tool that interacts with kubernetes and you&rsquo;re using <code>kubectl</code> under the hood, I bet it&rsquo;s because you feel more comfortable with kubectl and not so much with the REST API&hellip; But nothing comes free, you trade the knowledge you have of a tool by having to parse text instead of clearly defined objects that the API should return.</p>
+
+<p>Truth is, that the API documentation is not great either, so&hellip; maybe we should ask to have a bunch of examples that use the API so people can learn faster :)</p>
+
+
+  
+
+
+  
+
+
+</div>
+
+
+    </div>
+    
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <div class="text-center">
+    <p>
+    k8s.uk is made with
+    <span class="glyphicon glyphicon-heart"></span> by
+    <a href="http://twitter.com/agonzalezro">@agonzalezro</a> and <a href="https://twitter.com/ipedrazas">@ipedrazas</a>
+    </p>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
+    
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-78960031-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+
+  </body>
+</html>

@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+Accessing Kubernetes Apiserver | k8s.uk
+</title>
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+
+    
+  </head>
+
+  <body>
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">k8s.uk</a>
+        </div>
+        <nav class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/archive.html">Archive</a></li>
+            <li><a href="/pages/about.html">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+      
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <h1>Accessing Kubernetes Apiserver</h1>
+
+  <p>
+    
+    <span class="label label-default">by Ivan Pedrazas</span>
+
+    
+    <span class="label label-default">2016-06-06</span>
+    
+
+    
+    <a class="label label-success" href="/category/kubernetes.html">kubernetes</a>
+    
+
+    
+    
+    <a class="label label-info" href="/tag/security.html">security</a>
+    
+    <a class="label label-info" href="/tag/tokens.html">tokens</a>
+    
+    
+  </p>
+
+  <p>The process to access the api server is very simple. The <code>apiserver</code> has a flag that defines what type of access is desired:</p>
+
+<ul>
+<li><code>--authorization-mode=AlwaysDeny</code> blocks all requests (used in tests).</li>
+<li><code>--authorization-mode=AlwaysAllow</code> allows all requests; use if you don’t need authorization.</li>
+<li><code>--authorization-mode=ABAC</code> allows for user-configured authorization policy. ABAC stands for Attribute-Based Access Control.</li>
+<li><code>--authorization-mode=Webhook</code> allows for authorization to be driven by a remote service using REST.</li>
+</ul>
+
+<p>To allow Basic Auth and/or tokens, we have to select <code>ABAC</code>.</p>
+
+<h2>Access</h2>
+
+<p>To access the API server via tokens there are 2 things that need to be defined: the token/user and what the user is allowed to do. Tokens are defined in a file, policies are defined in a different file.</p>
+
+<p>These configuration files have to be passed to the <code>kube-apiserver</code> using the following parameters:</p>
+
+<ul>
+<li><code>--authorization-mode=ABAC</code></li>
+<li><code>--token-auth-file=/srv/kubernetes/auth_tokens.csv</code></li>
+<li><code>--authorization-policy-file=/srv/kubernetes/auth-policy.json</code></li>
+</ul>
+
+<p>If you want to allow Basic Auth, you have to specify the file containing the</p>
+
+<ul>
+<li><code>--basic-auth-file=/srv/kubernetes/basic_auth.csv</code></li>
+</ul>
+
+<p>Example of running the apiserver with those flags:</p>
+
+<pre><code>/bin/sh -c /usr/local/bin/kube-apiserver --address=127.0.0.1 --etcd-servers=http://127.0.0.1:4001
+--admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,PersistentVolumeLabel,ResourceQuota
+--token-auth-file=/srv/kubernetes/auth_tokens.csv
+--authorization-mode=ABAC
+--authorization-policy-file=/srv/kubernetes/auth-policy.json
+--basic-auth-file=/srv/kubernetes/basic_auth.csv
+</code></pre>
+
+<p>Here are examples of the files used by the <code>apiserver</code>:</p>
+
+<p>Example of tokens in <code>auth_tokens.csv</code>:</p>
+
+<pre><code>Wx4WOTOmFoY5yXaoMPtHdnKeFLPYeBBL,admin,admin
+jD34eFwNrJo9urd7QWLMALOjK7R58j1g,kubelet,kubelet
+PxgQ4vSloVIhfFwx9WYaj8uke93JVBHh,kube_proxy,kube_proxy
+i2TgpiZFZQNkIydDZzVkxmTHl3Q2hPNn,ivan,ivan
+</code></pre>
+
+<p>Example of user/password for Basic Auth <code>basic_auth.csv</code>:</p>
+
+<pre><code>GGIfwZn63i3NMWeN,admin,admin
+</code></pre>
+
+<p>Example of authentication policy file  <code>auth-policy.json</code></p>
+
+<pre><code>{&quot;apiVersion&quot;: &quot;abac.authorization.kubernetes.io/v1beta1&quot;, &quot;kind&quot;: &quot;Policy&quot;, &quot;spec&quot;: {&quot;user&quot;:&quot;ivan&quot;, &quot;namespace&quot;: &quot;*&quot;, &quot;resource&quot;: &quot;*&quot;, &quot;apiGroup&quot;: &quot;*&quot;, &quot;nonResourcePath&quot;: &quot;*&quot;}}
+{&quot;apiVersion&quot;: &quot;abac.authorization.kubernetes.io/v1beta1&quot;, &quot;kind&quot;: &quot;Policy&quot;, &quot;spec&quot;: {&quot;user&quot;:&quot;admin&quot;, &quot;namespace&quot;: &quot;*&quot;, &quot;resource&quot;: &quot;*&quot;, &quot;apiGroup&quot;: &quot;*&quot;, &quot;nonResourcePath&quot;: &quot;*&quot;}}
+{&quot;apiVersion&quot;: &quot;abac.authorization.kubernetes.io/v1beta1&quot;, &quot;kind&quot;: &quot;Policy&quot;, &quot;spec&quot;: {&quot;user&quot;:&quot;kubelet&quot;, &quot;namespace&quot;: &quot;*&quot;, &quot;resource&quot;: &quot;*&quot;, &quot;apiGroup&quot;: &quot;*&quot;, &quot;nonResourcePath&quot;: &quot;*&quot;}}
+{&quot;apiVersion&quot;: &quot;abac.authorization.kubernetes.io/v1beta1&quot;, &quot;kind&quot;: &quot;Policy&quot;, &quot;spec&quot;: {&quot;user&quot;:&quot;kube_proxy&quot;, &quot;namespace&quot;: &quot;*&quot;, &quot;resource&quot;: &quot;*&quot;, &quot;apiGroup&quot;: &quot;*&quot;, &quot;nonResourcePath&quot;: &quot;*&quot;}}
+{&quot;apiVersion&quot;: &quot;abac.authorization.kubernetes.io/v1beta1&quot;, &quot;kind&quot;: &quot;Policy&quot;, &quot;spec&quot;: {&quot;user&quot;:&quot;kubecfg&quot;, &quot;namespace&quot;: &quot;*&quot;, &quot;resource&quot;: &quot;*&quot;, &quot;apiGroup&quot;: &quot;*&quot;, &quot;nonResourcePath&quot;: &quot;*&quot;}}
+{&quot;apiVersion&quot;: &quot;abac.authorization.kubernetes.io/v1beta1&quot;, &quot;kind&quot;: &quot;Policy&quot;, &quot;spec&quot;: {&quot;user&quot;:&quot;client&quot;, &quot;namespace&quot;: &quot;*&quot;, &quot;resource&quot;: &quot;*&quot;, &quot;apiGroup&quot;: &quot;*&quot;, &quot;nonResourcePath&quot;: &quot;*&quot;}}
+{&quot;apiVersion&quot;: &quot;abac.authorization.kubernetes.io/v1beta1&quot;, &quot;kind&quot;: &quot;Policy&quot;, &quot;spec&quot;: {&quot;group&quot;:&quot;system:serviceaccounts&quot;, &quot;namespace&quot;: &quot;*&quot;, &quot;resource&quot;: &quot;*&quot;, &quot;apiGroup&quot;: &quot;*&quot;, &quot;nonResourcePath&quot;: &quot;*&quot;}}
+</code></pre>
+
+<h2>Testing</h2>
+
+<p>If you want to test the access, you can try the following commands:</p>
+
+<p>Access using Basic Auth:</p>
+
+<pre><code>curl -k -X GET -H   &quot;Authorization: Basic YWRtaW46R0dJZndabjYzaTNOTVdlTg==&quot;   https://$API_SERVER
+</code></pre>
+
+<p>Note that the string <code>YWRtaW46R0dJZndabjYzaTNOTVdlTg==</code> is the result of</p>
+
+<pre><code>echo -n &quot;admin:GGIfwZn63i3NMWeN&quot; | base64
+</code></pre>
+
+<p>Access using tokens:</p>
+
+<pre><code>curl -k -X GET -H &quot;Authorization: Bearer i2TgpiZFZQNkIydDZzVkxmTHl3Q2hPNn&quot;    https://$API_SERVER
+</code></pre>
+
+<h3>Policy File Format</h3>
+
+<p>For mode  <strong>ABAC</strong>, also specify <code>--authorization-policy-file=SOME_FILENAME</code>.
+The file format is one JSON object per line. There should be no enclosing list or map, just one map per line.
+Each line is a “policy object”. A policy object is a map with the following properties:</p>
+
+<ul>
+<li>Versioning properties:
+
+<ul>
+<li><strong>apiVersion</strong>, type string; valid values are “abac.authorization.kubernetes.io/v1beta1”. Allows versioning and conversion of the policy format.</li>
+<li><strong>kind</strong>, type string: valid values are “Policy”. Allows versioning and conversion of the policy format.</li>
+</ul></li>
+<li>spec property set to a map with the following properties:
+
+<ul>
+<li>Subject-matching properties:
+
+<ul>
+<li><strong>user</strong>, type string; the user-string from <code>--token-auth-file</code>. If you specify user, it must match the username of the authenticated user. * matches all requests.</li>
+<li><strong>group</strong>, type string; if you specify group, it must match one of the groups of the authenticated user. * matches all requests.</li>
+</ul></li>
+<li><strong>readonly</strong>, type boolean, when true, means that the policy only applies to get, list, and watch operations.</li>
+<li>Resource-matching properties:
+
+<ul>
+<li><strong>apiGroup</strong>, type string; an API group, such as extensions. * matches all API groups.</li>
+<li><strong>namespace</strong>, type string; a namespace string. * matches all resource requests.</li>
+<li><strong>resource</strong>, type string; a resource, such as pods. * matches all resource requests.</li>
+</ul></li>
+<li>Non-resource-matching properties:
+
+<ul>
+<li>nonResourcePath, type string; matches the non-resource request paths (like /version and /apis). * matches all                * <strong>non-resource requests</strong>. /foo/* matches /foo/ and all of its subpaths.</li>
+</ul></li>
+</ul></li>
+</ul>
+
+
+  
+
+
+  
+
+
+</div>
+
+
+    </div>
+    
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <div class="text-center">
+    <p>
+    k8s.uk is made with
+    <span class="glyphicon glyphicon-heart"></span> by
+    <a href="http://twitter.com/agonzalezro">@agonzalezro</a> and <a href="https://twitter.com/ipedrazas">@ipedrazas</a>
+    </p>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
+    
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-78960031-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+
+  </body>
+</html>

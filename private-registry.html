@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+Private Registry | k8s.uk
+</title>
+
+    <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    
+    <link rel="shortcut icon" href="/static/favicon.ico" />
+    
+
+    
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/css/style.css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+
+
+    
+  </head>
+
+  <body>
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">k8s.uk</a>
+        </div>
+        <nav class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/archive.html">Archive</a></li>
+            <li><a href="/pages/about.html">About</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+      
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <h1>Private Registry</h1>
+
+  <p>
+    
+    <span class="label label-default">by Ivan Pedrazas</span>
+
+    
+    <span class="label label-default">2015-12-03 09:58</span>
+    
+
+    
+    <a class="label label-success" href="/category/kubernetes.html">kubernetes</a>
+    
+
+    
+    
+    <a class="label label-info" href="/tag/registry.html">registry</a>
+    
+    <a class="label label-info" href="/tag/core.html">core</a>
+    
+    
+  </p>
+
+  <p>The first time we tried to use a private registry in Kubernetes we got bitten by a weird bug: the format of the <code>.dockercfg</code>.</p>
+
+<p>If you read the <a href="http://kubernetes.io/v1.1/docs/user-guide/images.html">documentation</a> you will see that you have to create a secret, and then use that secret in your pod definition.</p>
+
+<p>What it seems to be missing from the docs is that the format of the json that contains the registry auth info is important.</p>
+
+<p>This is the example in the documentation:</p>
+
+<pre><code>$ echo $(cat ~/.dockercfg)
+{ &quot;https://index.docker.io/v1/&quot;: { &quot;auth&quot;: &quot;ZmFrZXBhc3N3b3JkMTIK&quot;, &quot;email&quot;: &quot;jdoe@example.com&quot; } }
+</code></pre>
+
+<p>But we need base64 encode text:</p>
+
+<pre><code>$ cat ~/.dockercfg | base64
+eyAiaHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEvIjogeyAiYXV0aCI6ICJabUZyWlhCaGMzTjNiM0prTVRJSyIsICJlbWFpbCI6ICJqZG9lQGV4YW1wbGUuY29tIiB9IH0K
+</code></pre>
+
+<p>Finally, we create the secret definiton using the base64</p>
+
+<pre><code>$ cat &gt; /tmp/image-pull-secret.yaml &lt;&lt;EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: myregistrykey
+data:
+  .dockercfg: eyAiaHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEvIjogeyAiYXV0aCI6ICJabUZyWlhCaGMzTjNiM0prTVRJSyIsICJlbWFpbCI6ICJqZG9lQGV4YW1wbGUuY29tIiB9IH0K
+type: kubernetes.io/dockercfg
+EOF
+</code></pre>
+
+<p>Finally, we create the secret in the cluster</p>
+
+<pre><code>$ kubectl create -f /tmp/image-pull-secret.yaml
+secrets/myregistrykey
+</code></pre>
+
+<p>Once we have the secret, we can use that secret in our pods.</p>
+
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: foo
+spec:
+  containers:
+    - name: foo
+      image: janedoe/awesomeapp:v1
+  imagePullSecrets:
+    - name: myregistrykey
+</code></pre>
+
+<p>This is all true and good, but the detail of the format of .dockercfg is the kind of thing that will have you running around calling names. So, what&rsquo;s the problem? If you execute the first command of the post:</p>
+
+<pre><code>$ echo $(cat ~/.dockercfg)
+</code></pre>
+
+<p>You will see that it returns 1 line. However, between catting the file and echoing the catting fo the file there&rsquo;s one little detail: that ECHO makes the file to be in one single line.</p>
+
+<p>Now, look at this:</p>
+
+<pre><code>-&gt; % cat .dockercfg| base64
+ewoKCSJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7CgkJImF2dGgiOiAiYVhCbFpISmhl
+bUZ6T25Rd2REQnlNRMV5T21SdiIsCgkJImVtYWlsIjogImlwZWRyYXphc0BnbWFpbC5jb20iCgl9
+Cn0=
+
+-&gt; % echo $(cat .dockercfg) | base64
+eyAiaHR0cHM6Ly9pbmRleC5kb2NrZXIuaW8vdjEvIjogeyAiYXV2aCI6ICJhWEJsWkhKaGVtRnpP
+blF3ZERCeU1ERXlPbVJ2KiwgImVtYWlsIjogImlwZWRyYXphc0BnbWFpbC5jb20iIH0gfQo=
+</code></pre>
+
+<p>I&rsquo;m not sure why nobody has bothered writing this little note in the docs, but if you don&rsquo;t echo the cat, the secret will be wrong. Anyway, from now on, remember, the format of the json is important&hellip; so make sure you verify the json you&rsquo;re using is in one single line.</p>
+
+
+  
+
+
+  
+
+
+</div>
+
+
+    </div>
+    
+<div class="container col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+  <div class="text-center">
+    <p>
+    k8s.uk is made with
+    <span class="glyphicon glyphicon-heart"></span> by
+    <a href="http://twitter.com/agonzalezro">@agonzalezro</a> and <a href="https://twitter.com/ipedrazas">@ipedrazas</a>
+    </p>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//getbootstrap.com/dist/js/bootstrap.min.js"></script>
+
+    
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-78960031-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+
+  </body>
+</html>
